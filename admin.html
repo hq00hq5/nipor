@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="لوحة إدارة مكتبة نيپور — إدارة دور النشر والكتب والتصنيفات"/>
+  <title>نيپور | لوحة الإدارة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+<div id="toastContainer" class="toast-container" role="alert"></div>
+
+<!-- SIDEBAR -->
+<aside class="admin-sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">𒀭</div>
+    <div><div class="sidebar-logo-text">نيپور</div><div class="sidebar-logo-tag">ADMIN DASHBOARD</div></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">الرئيسية</div>
+    <a href="#" class="nav-item active" id="nav-overview" data-section="overview"><div class="nav-item-icon"><i class="fa-solid fa-chart-pie"></i></div><span class="nav-item-text">نظرة عامة</span></a>
+    <div class="nav-group-label">إدارة المحتوى</div>
+    <a href="#" class="nav-item" id="nav-publishers" data-section="publishers"><div class="nav-item-icon"><i class="fa-solid fa-building-columns"></i></div><span class="nav-item-text">دور النشر</span></a>
+    <a href="#" class="nav-item" id="nav-books" data-section="books"><div class="nav-item-icon"><i class="fa-solid fa-book"></i></div><span class="nav-item-text">الكتب</span></a>
+    <a href="#" class="nav-item" id="nav-categories" data-section="categories"><div class="nav-item-icon"><i class="fa-solid fa-palette"></i></div><span class="nav-item-text">التصنيفات</span></a>
+    <div class="nav-group-label">عرض</div>
+    <a href="index.html" class="nav-item"><div class="nav-item-icon"><i class="fa-solid fa-store"></i></div><span class="nav-item-text">عرض المكتبة</span></a>
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-status"><div class="status-dot"></div><span id="firebase-status-text">جاري الاتصال…</span></div></div>
+</aside>
+
+<!-- MAIN -->
+<main class="admin-main">
+  <header class="admin-header">
+    <div class="page-breadcrumb"><span>نيپور</span><span style="color:var(--clr-border)">·</span><span class="breadcrumb-current" id="breadcrumb-text">نظرة عامة</span></div>
+    <a href="index.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-eye"></i> عرض المكتبة</a>
+  </header>
+  <div class="admin-page-content">
+
+    <!-- OVERVIEW -->
+    <section id="section-overview" class="admin-section active">
+      <h1 style="font-size:1.5rem;font-weight:800;margin-bottom:var(--sp-xl)">مرحباً 👋</h1>
+      <div class="stats-overview">
+        <div class="stat-card s-gold"><div class="stat-card-icon"><i class="fa-solid fa-building-columns"></i></div><div class="stat-card-info"><div class="stat-value" id="admin-stat-pubs">—</div><div class="stat-label">دور النشر</div></div></div>
+        <div class="stat-card s-royal"><div class="stat-card-icon"><i class="fa-solid fa-book"></i></div><div class="stat-card-info"><div class="stat-value" id="admin-stat-books">—</div><div class="stat-label">الكتب</div></div></div>
+        <div class="stat-card s-success"><div class="stat-card-icon"><i class="fa-solid fa-tags"></i></div><div class="stat-card-info"><div class="stat-value" id="admin-stat-cats">—</div><div class="stat-label">تصنيف</div></div></div>
+        <div class="stat-card s-warn"><div class="stat-card-icon"><i class="fa-solid fa-signal"></i></div><div class="stat-card-info"><div class="stat-value">🟢</div><div class="stat-label">مباشر</div></div></div>
+      </div>
+      <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon"><i class="fa-solid fa-bolt"></i></div>إجراءات سريعة</div></div>
+        <div class="admin-card-body" style="display:flex;gap:var(--sp-md);flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="document.getElementById('nav-publishers').click()"><i class="fa-solid fa-plus"></i> إضافة دار نشر</button>
+          <button class="btn btn-gold" onclick="document.getElementById('nav-books').click()"><i class="fa-solid fa-book-medical"></i> إضافة كتاب</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('nav-categories').click()"><i class="fa-solid fa-palette"></i> التصنيفات</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PUBLISHERS -->
+    <section id="section-publishers" class="admin-section">
+      <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon"><i class="fa-solid fa-plus"></i></div><span id="pub-form-title">إضافة دار نشر</span></div><button class="btn btn-secondary btn-sm hidden" id="cancel-edit-pub"><i class="fa-solid fa-xmark"></i> إلغاء</button></div>
+        <div class="admin-card-body"><form id="pub-form" novalidate><input type="hidden" id="pub-edit-id"/>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label" for="pub-name">الاسم <span class="required">*</span></label><input type="text" id="pub-name" class="form-input" placeholder="دار المعارف" required/></div>
+            <div class="form-group"><label class="form-label" for="pub-icon-file">شعار الناشر</label>
+              <div class="file-input-wrap"><i class="fa-solid fa-cloud-arrow-up" style="color:var(--clr-gold)"></i><span class="file-input-label" id="pub-icon-label">اختر صورة أو اسحبها هنا</span><input type="file" id="pub-icon-file" accept="image/*"/></div>
+              <div class="file-preview" id="pub-icon-preview"></div>
+              <span class="form-hint">أو أدخل رابط مباشر:</span>
+              <input type="url" id="pub-icon-url" class="form-input" placeholder="https://..." style="margin-top:4px"/>
+            </div>
+            <div class="form-group"><label class="form-label" for="pub-weight">أولوية العرض</label><input type="number" id="pub-weight" class="form-input" min="1" value="1"/></div>
+            <div class="form-group full"><label class="form-label" for="pub-bio">نبذة</label><textarea id="pub-bio" class="form-textarea" placeholder="وصف مختصر…"></textarea></div>
+          </div>
+          <div style="margin-top:var(--sp-lg);display:flex;gap:var(--sp-sm)">
+            <button type="submit" class="btn btn-primary" id="pub-submit"><span class="btn-spinner animate-spin hidden"><i class="fa-solid fa-spinner"></i></span><span class="btn-text"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ</span></button>
+            <button type="reset" class="btn btn-ghost"><i class="fa-solid fa-rotate-left"></i> مسح</button>
+          </div>
+        </form></div>
+      </div>
+      <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon"><i class="fa-solid fa-list"></i></div>قائمة دور النشر</div></div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>الناشر</th><th>الأولوية</th><th>النبذة</th><th>إجراءات</th></tr></thead><tbody id="pub-tbody"><tr class="empty-table-row" id="pub-empty"><td colspan="4">لا توجد دور نشر</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- BOOKS -->
+    <section id="section-books" class="admin-section">
+      <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon"><i class="fa-solid fa-book-medical"></i></div><span id="book-form-title">إضافة كتاب</span></div><button class="btn btn-secondary btn-sm hidden" id="cancel-edit-book"><i class="fa-solid fa-xmark"></i> إلغاء</button></div>
+        <div class="admin-card-body"><form id="book-form" novalidate><input type="hidden" id="book-edit-id"/>
+          <div class="form-grid">
+            <div class="form-group"><label class="form-label" for="book-title">العنوان <span class="required">*</span></label><input type="text" id="book-title" class="form-input" placeholder="عنوان الكتاب" required/></div>
+            <div class="form-group"><label class="form-label" for="book-author">المؤلف <span class="required">*</span></label><input type="text" id="book-author" class="form-input" placeholder="اسم المؤلف" required/></div>
+            <div class="form-group"><label class="form-label" for="book-cover-file">صورة الغلاف</label>
+              <div class="file-input-wrap"><i class="fa-solid fa-image" style="color:var(--clr-gold)"></i><span class="file-input-label" id="book-cover-label">اختر صورة الغلاف</span><input type="file" id="book-cover-file" accept="image/*"/></div>
+              <div class="file-preview" id="book-cover-preview"></div>
+              <span class="form-hint">أو رابط:</span><input type="url" id="book-cover-url" class="form-input" placeholder="https://..." style="margin-top:4px"/>
+            </div>
+            <div class="form-group"><label class="form-label" for="book-gallery-file">صور إضافية (معرض)</label>
+              <div class="file-input-wrap"><i class="fa-solid fa-images" style="color:var(--clr-gold)"></i><span class="file-input-label" id="book-gallery-label">اختر صور المعرض</span><input type="file" id="book-gallery-file" accept="image/*" multiple/></div>
+              <div class="file-preview" id="book-gallery-preview"></div>
+            </div>
+            <div class="form-group"><label class="form-label" for="book-price">السعر (ر.س)</label><input type="number" id="book-price" class="form-input" min="0" step="0.01" placeholder="0.00"/><span class="form-hint">0 = مجاني</span></div>
+            <div class="form-group"><label class="form-label" for="book-category">التصنيف <span class="required">*</span></label><select id="book-category" class="form-select" required><option value="">— اختر —</option><option value="رواية">رواية</option><option value="تاريخ">تاريخ</option><option value="علوم">علوم</option><option value="فلسفة">فلسفة</option><option value="أعمال">أعمال</option><option value="تقنية">تقنية</option><option value="أدب">أدب</option><option value="شعر">شعر</option><option value="طفل">أدب الطفل</option><option value="سياسة">سياسة</option></select></div>
+            <div class="form-group"><label class="form-label" for="book-publisher">دار النشر <span class="required">*</span></label><select id="book-publisher" class="form-select" required><option value="">— اختر —</option></select><span class="form-hint">يُحدَّث تلقائياً</span></div>
+            <div class="form-group"><label class="form-label" for="book-stock">المخزون</label><input type="number" id="book-stock" class="form-input" min="0" placeholder="∞"/><span class="form-hint">اتركه فارغاً = غير محدود</span></div>
+            <div class="form-group"><label class="form-label" for="book-edition">سنة الإصدار</label><input type="number" id="book-edition" class="form-input" placeholder="2024" min="1900" max="2100"/></div>
+            <div class="form-group"><label class="form-label" for="book-cover-type">نوع الغلاف</label><select id="book-cover-type" class="form-select"><option value="">— اختر —</option><option value="غلاف صلب">غلاف صلب (Hardcover)</option><option value="غلاف ورقي">غلاف ورقي (Paperback)</option></select></div>
+          </div>
+          <div style="margin-top:var(--sp-lg);display:flex;gap:var(--sp-sm)">
+            <button type="submit" class="btn btn-gold" id="book-submit"><span class="btn-spinner animate-spin hidden"><i class="fa-solid fa-spinner"></i></span><span class="btn-text"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ الكتاب</span></button>
+            <button type="reset" class="btn btn-ghost"><i class="fa-solid fa-rotate-left"></i> مسح</button>
+          </div>
+        </form></div>
+      </div>
+      <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon"><i class="fa-solid fa-list"></i></div>قائمة الكتب</div></div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>الكتاب</th><th>المؤلف</th><th>التصنيف</th><th>السعر</th><th>المخزون</th><th>إجراءات</th></tr></thead><tbody id="book-tbody"><tr class="empty-table-row" id="book-empty"><td colspan="6">لا توجد كتب</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section id="section-categories" class="admin-section">
+      <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon" style="background:var(--grad-gold);color:var(--clr-royal)"><i class="fa-solid fa-palette"></i></div>التصنيفات</div></div>
+        <div class="admin-card-body"><p style="color:var(--txt-secondary);margin-bottom:var(--sp-lg);font-size:0.9rem">تُبنى التصنيفات تلقائياً من حقل "التصنيف" في نموذج الكتب.</p>
+          <div id="cats-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--sp-md)"></div>
+          <div id="cats-empty" style="padding:var(--sp-xl);text-align:center;color:var(--txt-muted)">لا توجد تصنيفات بعد</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

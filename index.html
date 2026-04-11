@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="description" content="نيپور — الوسيط الرقمي الفاخر. اكتشف آلاف الكتب من أبرز دور النشر."/>
+  <title>نيپور | المكتبة الرقمية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toastContainer" class="toast-container" role="alert"></div>
+
+<!-- ═══ FAVORITES PANEL ═══ -->
+<div class="fav-overlay" id="fav-overlay"></div>
+<aside class="fav-panel" id="fav-panel">
+  <div class="fav-header">
+    <div class="fav-header-title"><i class="fa-solid fa-heart" style="color:var(--clr-pink)"></i> المفضلة <span id="fav-count-badge" class="text-xs" style="color:var(--txt-muted)">(0)</span></div>
+    <button class="fav-close" id="fav-close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="fav-body" id="fav-body">
+    <div class="fav-empty" id="fav-empty"><span style="font-size:3rem;opacity:.3">💔</span><span>لا توجد كتب في المفضلة</span></div>
+  </div>
+</aside>
+
+<!-- ═══ AUTH MODAL ═══ -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <button class="auth-close" id="auth-close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="auth-icon">𒀭</div>
+    <h2 class="auth-title">مرحباً بك في نيپور</h2>
+    <p class="auth-desc">سجّل دخولك للوصول إلى محفظتك والمزيد</p>
+    <input class="auth-input" id="auth-email" type="email" placeholder="البريد الإلكتروني"/>
+    <button class="btn btn-primary" style="width:100%" id="auth-email-btn"><i class="fa-solid fa-arrow-left"></i> تسجيل بالبريد</button>
+    <div class="auth-or">أو</div>
+    <input class="auth-input" id="auth-phone" type="tel" placeholder="رقم الهاتف (OTP)"/>
+    <button class="btn btn-gold" style="width:100%" id="auth-phone-btn"><i class="fa-solid fa-mobile-screen"></i> تسجيل بالهاتف</button>
+  </div>
+</div>
+
+<!-- ═══ PROFILE / E-WALLET PANEL ═══ -->
+<div class="profile-overlay" id="profile-overlay"></div>
+<aside class="profile-panel" id="profile-panel">
+  <div class="profile-header">
+    <span style="font-weight:800;font-size:1.1rem">حسابي</span>
+    <button class="fav-close" id="profile-close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="wallet-card">
+    <div style="font-size:0.75rem;color:rgba(212,175,55,0.6);margin-bottom:4px">رصيد المحفظة</div>
+    <div class="wallet-balance" id="wallet-balance">0.00</div>
+    <div class="wallet-label">ر.س</div>
+    <div class="wallet-actions">
+      <button class="btn btn-gold btn-sm" id="wallet-topup"><i class="fa-solid fa-plus"></i> شحن</button>
+    </div>
+  </div>
+  <!-- GPS Location -->
+  <div class="gps-section">
+    <h3 style="font-size:1rem;font-weight:800;margin-bottom:var(--sp-md)">📍 عنواني</h3>
+    <button class="gps-btn" id="gps-btn"><i class="fa-solid fa-location-crosshairs" style="color:var(--clr-gold)"></i> تحديد موقعي الحالي</button>
+    <div class="gps-status" id="gps-status"></div>
+  </div>
+  <!-- Live Tracking -->
+  <div class="tracking-section">
+    <h3 class="tracking-title"><i class="fa-solid fa-truck-fast" style="color:var(--clr-gold)"></i> تتبع الطلب</h3>
+    <div class="tracking-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div><div class="step-info"><div class="step-title">تم استلام الطلب</div><div class="step-time">—</div></div></div>
+    <div class="tracking-step" id="track-prep"><div class="step-icon"><i class="fa-solid fa-box"></i></div><div class="step-info"><div class="step-title">جاري التحضير</div><div class="step-time">—</div></div></div>
+    <div class="tracking-step" id="track-courier"><div class="step-icon"><i class="fa-solid fa-motorcycle"></i></div><div class="step-info"><div class="step-title">مع المندوب</div><div class="step-time">—</div></div></div>
+    <div class="tracking-step" id="track-done"><div class="step-icon"><i class="fa-solid fa-house"></i></div><div class="step-info"><div class="step-title">تم التوصيل</div><div class="step-time">—</div></div></div>
+  </div>
+</aside>
+
+<!-- ═══ BOOK DETAIL PANEL ═══ -->
+<div class="detail-overlay" id="detail-overlay"></div>
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-header">
+    <span style="font-weight:700">تفاصيل الكتاب</span>
+    <button class="close-btn" id="detail-close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div id="detail-body"></div>
+</div>
+
+<!-- ═══ ZOOM OVERLAY ═══ -->
+<div class="zoom-overlay" id="zoom-overlay"><img id="zoom-img" src="" alt=""/></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     HEADER
+     ══════════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-glass">
+    <div class="container">
+      <div class="nav-flex">
+        <a href="index.html" class="logo-wrap">
+          <div class="logo-icon">𒀭</div>
+          <div><div class="logo-title text-gold">نيپور</div><div class="logo-subtitle">PREMIUM LIBRARY</div></div>
+        </a>
+        <button class="back-nav" id="back-nav"><i class="fa-solid fa-arrow-right"></i> <span id="back-label">العودة</span></button>
+        <div class="search-container" role="search">
+          <input type="search" id="main-search" class="search-input" placeholder="ابحث عن كتاب، مؤلف أو ناشر…" autocomplete="off"/>
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        </div>
+        <nav class="nav-actions">
+          <a href="admin.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-gauge-high"></i> الإدارة</a>
+          <button class="action-icon" id="fav-toggle" title="المفضلة"><i class="fa-regular fa-heart"></i><span class="badge-count hidden" id="fav-nav-badge">0</span></button>
+          <button class="action-icon" id="cart-nav" title="السلة"><i class="fa-solid fa-basket-shopping"></i><span class="badge-count hidden" id="cart-nav-badge">0</span></button>
+          <button class="action-icon" id="user-btn" title="حسابي"><i class="fa-solid fa-user"></i></button>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════
+     HERO (Dark Luxury)
+     ══════════════════════════════════════════════════════════ -->
+<section class="hero" id="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge"><span>✦</span> الوسيط الرقمي الفاخر</div>
+      <h1 class="hero-title"><span class="text-gold">اكتشف عالمك</span><br/>في كتاب</h1>
+      <p class="hero-subtitle">آلاف العناوين من أبرز دور النشر العربية والعالمية، بتصميم فاخر ملهم من حضارة سومر.</p>
+      <div class="hero-cta">
+        <a href="#discover" class="btn btn-gold btn-lg"><i class="fa-solid fa-compass"></i> استكشف المكتبة</a>
+        <a href="admin.html" class="btn btn-ghost btn-lg" style="border-color:var(--clr-gold);color:var(--clr-gold)"><i class="fa-solid fa-plus"></i> إضافة محتوى</a>
+      </div>
+      <!-- Smart Filters -->
+      <div class="smart-filters" id="smart-filters">
+        <button class="filter-pill active" data-filter="all">الكل</button>
+        <button class="filter-pill" data-filter="bestseller">الأكثر مبيعاً</button>
+        <button class="filter-pill" data-filter="new">إصدارات جديدة</button>
+        <button class="filter-pill" data-filter="offers">عروض خاصة</button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="stat-num" id="stat-pubs">—</div><div class="stat-label">دار نشر</div></div>
+        <div class="hero-stat"><div class="stat-num" id="stat-books">—</div><div class="stat-label">كتاب</div></div>
+        <div class="hero-stat"><div class="stat-num" id="stat-cats">—</div><div class="stat-label">تصنيف</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SPONSORED PUBLISHERS ═══ -->
+<section class="sponsored-section" id="sponsored-section">
+  <div class="container">
+    <div class="sponsored-title">دور نشر مميزة</div>
+    <div class="sponsored-row" id="sponsored-row"><!-- live --></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     DISCOVER — Dual Tabs + Books
+     ══════════════════════════════════════════════════════════ -->
+<main id="discover">
+  <section class="section" id="tab-section">
+    <div class="container">
+      <div class="tab-header">
+        <h2 class="section-title text-gold">تصفح المكتبة</h2>
+        <div class="tab-switcher" role="tablist">
+          <div class="tab-indicator" id="tab-indicator"></div>
+          <button class="tab-btn active" data-panel="publishers" id="tab-publishers">🏛️ دور النشر</button>
+          <button class="tab-btn" data-panel="categories" id="tab-categories">🎨 التصنيفات</button>
+        </div>
+      </div>
+      <!-- Internal Filter Bar (shows during drill-down) -->
+      <div class="internal-filter-bar" id="internal-filters">
+        <input type="search" class="internal-search" id="internal-search" placeholder="بحث داخلي…"/>
+        <select class="filter-select" id="filter-price"><option value="">— السعر —</option><option value="low">الأقل سعراً</option><option value="high">الأعلى سعراً</option></select>
+      </div>
+      <div class="tab-panels" id="tab-panels">
+        <div class="tab-panel active" id="panel-publishers"><div class="pub-grid" id="pub-grid">
+          <div class="skeleton" style="aspect-ratio:2/3;border-radius:var(--r-lg)"></div>
+          <div class="skeleton" style="aspect-ratio:2/3;border-radius:var(--r-lg)"></div>
+          <div class="skeleton" style="aspect-ratio:2/3;border-radius:var(--r-lg)"></div>
+        </div></div>
+        <div class="tab-panel" id="panel-categories"><div class="cat-grid" id="cat-grid">
+          <div class="skeleton" style="aspect-ratio:1;border-radius:var(--r-lg)"></div>
+          <div class="skeleton" style="aspect-ratio:1;border-radius:var(--r-lg)"></div>
+          <div class="skeleton" style="aspect-ratio:1;border-radius:var(--r-lg)"></div>
+          <div class="skeleton" style="aspect-ratio:1;border-radius:var(--r-lg)"></div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DYNAMIC ROWS ═══ -->
+  <section class="section" id="rows-section">
+    <div class="container">
+      <!-- New Arrivals -->
+      <div id="row-new" style="margin-bottom:var(--sp-2xl)">
+        <div class="row-header"><h3 class="row-title"><i class="fa-solid fa-sparkles"></i> أحدث الإصدارات</h3><span class="row-see-all">عرض الكل ←</span></div>
+        <div class="books-scroll" id="books-new">
+          <div class="skeleton" style="width:210px;aspect-ratio:2/3;border-radius:var(--r-md);flex-shrink:0"></div>
+          <div class="skeleton" style="width:210px;aspect-ratio:2/3;border-radius:var(--r-md);flex-shrink:0"></div>
+          <div class="skeleton" style="width:210px;aspect-ratio:2/3;border-radius:var(--r-md);flex-shrink:0"></div>
+        </div>
+      </div>
+      <!-- Nippur Recommendations -->
+      <div id="row-rec" style="margin-bottom:var(--sp-2xl)">
+        <div class="row-header"><h3 class="row-title"><i class="fa-solid fa-crown"></i> توصيات نيپور</h3><span class="row-see-all">عرض الكل ←</span></div>
+        <div class="books-scroll" id="books-rec"></div>
+      </div>
+      <!-- Filtered Results (from drill-down) -->
+      <div id="row-filtered" class="hidden">
+        <div class="row-header"><h3 class="row-title" id="filtered-title"><i class="fa-solid fa-filter"></i> النتائج</h3></div>
+        <div id="books-filtered" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:var(--sp-lg)"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div><div style="display:flex;align-items:center;gap:10px;margin-bottom:var(--sp-md)"><div class="logo-icon" style="width:34px;height:34px;font-size:1rem">𒀭</div><span class="text-gold" style="font-size:1.3rem;font-weight:900">نيپور</span></div><p style="font-size:0.85rem;color:rgba(255,255,255,0.35);line-height:1.7">الوسيط الرقمي الفاخر — نربط بين دور النشر والقراء بتجربة استثنائية.</p></div>
+      <div><h3 class="footer-heading">روابط</h3><ul class="footer-links"><li><a href="#discover">تصفح</a></li><li><a href="admin.html">الإدارة</a></li></ul></div>
+      <div><h3 class="footer-heading">تواصل</h3><ul class="footer-links"><li><a href="#">support@nippur.app</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">© 2025 نيپور — جميع الحقوق محفوظة</div>
+  </div>
+</footer>
+
+<!-- FLOATING CART -->
+<div class="floating-cart" id="floating-cart" title="اسحب • مرّر للإخفاء">
+  <i class="fa-solid fa-bag-shopping"></i>
+  <span class="cart-badge-float hidden" id="cart-badge">0</span>
+  <span class="cart-total-label" id="cart-total">0 ر.س</span>
+</div>
+<button class="cart-restore" id="cart-restore"><i class="fa-solid fa-bag-shopping"></i></button>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,11 +1,13 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// ╔══════════════════════════════════════════════════════╗
+// ║         Nippur — Firebase Core Module                ║
+// ║         Project: nipor-b8997                         ║
+// ╚══════════════════════════════════════════════════════╝
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyBl5YsPvdgbC546Xun0J7kz-RxxP63Sikw",
   authDomain: "nipor-b8997.firebaseapp.com",
@@ -16,6 +18,13 @@ const firebaseConfig = {
   measurementId: "G-Q6FTHMVR60"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const db  = getFirestore(app);
+const storage = getStorage(app);
+const auth    = getAuth(app);
+
+export {
+  app, db, storage, auth,
+  collection, addDoc, getDocs, onSnapshot,
+  doc, deleteDoc, updateDoc, query, orderBy
+};
