@@ -7,44 +7,12 @@
 
 /* ── DESIGN TOKENS ─────────────────────────────────────── */
 :root {
-  --clr-royal:        #0F0F0F;
-  --clr-royal-2:      #1A1A1A;
-  --clr-royal-3:      #252525;
+  /* Common variables */
   --clr-gold:         #D4AF37;
   --clr-gold-light:   #EEDC82;
   --clr-gold-dark:    #996515;
-  --clr-clay:         #EAE6E1;
-  --clr-clay-light:   #F5F3EF;
-  --clr-clay-dark:    #CDC5BC;
-
-  --clr-bg:           var(--clr-clay-light);
-  --clr-surface:      #FFFFFF;
-  --clr-border:       rgba(212,175,55,0.20);
-  --clr-border-clay:  rgba(0,0,0,0.08);
-
-  --grad-primary:     linear-gradient(135deg, var(--clr-royal) 0%, var(--clr-royal-2) 100%);
-  --grad-gold:        linear-gradient(135deg, var(--clr-gold-light) 0%, var(--clr-gold) 50%, var(--clr-gold-dark) 100%);
-  --grad-gold-soft:   linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.04) 100%);
-  --grad-hero:        linear-gradient(160deg, var(--clr-royal) 0%, var(--clr-royal-2) 50%, var(--clr-royal-3) 100%);
 
   --clr-success: #10B981; --clr-danger: #E11D48; --clr-warn: #F59E0B; --clr-pink: #EC4899;
-
-  --txt-primary:      var(--clr-royal);
-  --txt-secondary:    #4A4A4A;
-  --txt-muted:        #8C8C8C;
-  --txt-inverse:      var(--clr-clay-light);
-  --txt-gold:         var(--clr-gold);
-
-  --glass-bg:         rgba(245,243,239,0.82);
-  --glass-bg-dark:    rgba(15,15,15,0.82);
-  --glass-border:     rgba(255,255,255,0.35);
-  --glass-blur:       blur(20px) saturate(180%);
-
-  --shadow-sm:        0 2px 8px rgba(0,0,0,0.05);
-  --shadow-md:        0 8px 24px rgba(0,0,0,0.08);
-  --shadow-lg:        0 16px 48px rgba(0,0,0,0.12);
-  --shadow-gold:      0 8px 24px rgba(212,175,55,0.30);
-  --shadow-gold-glow: 0 0 20px rgba(212,175,55,0.35), 0 0 40px rgba(212,175,55,0.15);
 
   --r-sm: 8px; --r-md: 12px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
   --sp-xs: 4px; --sp-sm: 8px; --sp-md: 16px; --sp-lg: 24px; --sp-xl: 40px; --sp-2xl: 64px; --sp-3xl: 96px;
@@ -53,6 +21,61 @@
   --t-spring: 0.5s cubic-bezier(0.34,1.56,0.64,1);
   --header-h: 68px;
   --max-w: 1280px;
+
+  /* Theme variables - Default Dark Mode (Royal Black) */
+  --clr-bg:           #0A0A0A; 
+  --clr-surface:      #121212;
+  --clr-border:       rgba(212,175,55,0.2);
+  --clr-border-clay:  rgba(255,255,255,0.08);
+
+  --grad-primary:     linear-gradient(135deg, #0A0A0A 0%, #171717 100%);
+  --grad-gold:        linear-gradient(135deg, var(--clr-gold-light) 0%, var(--clr-gold) 50%, var(--clr-gold-dark) 100%);
+  --grad-gold-soft:   linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(212,175,55,0.04) 100%);
+  --grad-hero:        linear-gradient(160deg, #0A0A0A 0%, #161616 50%, #1C1C1C 100%);
+
+  --txt-primary:      #F5F5F0;
+  --txt-secondary:    #E0E0E0;
+  --txt-muted:        #8C8C8C;
+  --txt-inverse:      #0A0A0A;
+  --txt-gold:         var(--clr-gold);
+
+  --glass-bg:         rgba(10,10,10,0.85);
+  --glass-bg-dark:    rgba(10,10,10,0.9);
+  --glass-border:     rgba(212,175,55,0.15);
+  --glass-blur:       blur(24px) saturate(180%);
+
+  --shadow-sm:        0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md:        0 8px 24px rgba(0,0,0,0.6);
+  --shadow-lg:        0 16px 48px rgba(0,0,0,0.8);
+  --shadow-gold:      0 8px 24px rgba(212,175,55,0.15);
+  --shadow-gold-glow: 0 0 20px rgba(212,175,55,0.25), 0 0 40px rgba(212,175,55,0.1);
+  --clr-royal:        #000000;
+}
+
+[data-theme="light"] {
+  --clr-bg:           #F5F5F0;
+  --clr-surface:      #FFFFFF;
+  --clr-border:       rgba(212,175,55,0.3);
+  --clr-border-clay:  rgba(0,0,0,0.08);
+
+  --grad-primary:     linear-gradient(135deg, #F5F5F0 0%, #EAE6E1 100%);
+  --grad-hero:        linear-gradient(160deg, #111 0%, #1a1a1a 50%, #222 100%);
+
+  --txt-primary:      #1A1A1A;
+  --txt-secondary:    #4A4A4A;
+  --txt-muted:        #707070;
+  --txt-inverse:      #F5F5F0;
+
+  --glass-bg:         rgba(245,245,240,0.85);
+  --glass-bg-dark:    rgba(255,255,255,0.95);
+  --glass-border:     rgba(0,0,0,0.05);
+
+  --shadow-sm:        0 2px 8px rgba(0,0,0,0.05);
+  --shadow-md:        0 8px 24px rgba(0,0,0,0.08);
+  --shadow-lg:        0 16px 48px rgba(0,0,0,0.12);
+  --shadow-gold:      0 8px 24px rgba(212,175,55,0.25);
+  --shadow-gold-glow: 0 0 20px rgba(212,175,55,0.35), 0 0 40px rgba(212,175,55,0.15);
+  --clr-royal:        #0F0F0F;
 }
 
 /* ── RESET ─────────────────────────────────────────────── */
@@ -63,10 +86,16 @@ img{max-width:100%;display:block}a{text-decoration:none;color:inherit}
 button{cursor:pointer;border:none;background:none;font-family:inherit}
 input,textarea,select{font-family:inherit;outline:none}ul{list-style:none}
 
-/* Cuneiform BG pattern */
+/* Animated Cuneiform BG pattern */
 body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%23D4AF37' stroke-width='0.8' opacity='0.04'%3E%3Cpolygon points='40,8 55,18 55,38 40,48 25,38 25,18'/%3E%3Cline x1='40' y1='8' x2='40' y2='48'/%3E%3Cline x1='25' y1='28' x2='55' y2='28'/%3E%3Ccircle cx='40' cy='28' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  content:'';position:fixed;inset:-50%;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cg fill='none' stroke='%23D4AF37' stroke-width='0.6' opacity='0.04'%3E%3Cpolygon points='40,8 55,18 55,38 40,48 25,38 25,18'/%3E%3Cline x1='40' y1='8' x2='40' y2='48'/%3E%3Cline x1='25' y1='28' x2='55' y2='28'/%3E%3Ccircle cx='40' cy='28' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  animation: bg-drift 120s linear infinite;
+  will-change: transform;
+}
+@keyframes bg-drift {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-160px, -160px) rotate(0deg); }
 }
 
 /* ── TYPOGRAPHY ────────────────────────────────────────── */
@@ -85,7 +114,7 @@ h1,h2,h3,h4{font-family:'Cairo',sans-serif;font-weight:700;line-height:1.15}
 .btn-gold{background:var(--grad-gold);color:var(--clr-royal);box-shadow:var(--shadow-gold);font-weight:800}
 .btn-gold:hover{box-shadow:var(--shadow-gold-glow);transform:translateY(-2px)}
 .btn-ghost{background:transparent;border:2px solid var(--clr-royal);color:var(--clr-royal)}
-.btn-ghost:hover{background:var(--clr-royal);color:var(--clr-gold)}
+.btn-ghost:hover, .btn-ghost.active{background:var(--clr-royal);color:var(--clr-gold)}
 .btn-sm{padding:8px 18px;font-size:0.82rem}
 .btn-lg{padding:14px 36px;font-size:1.05rem}
 .btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
@@ -244,7 +273,7 @@ h1,h2,h3,h4{font-family:'Cairo',sans-serif;font-weight:700;line-height:1.15}
 }
 .pub-poster-avatar img{width:100%;height:100%;object-fit:cover}
 .pub-poster-name{font-family:'Cairo';font-size:1.05rem;font-weight:800;color:var(--clr-gold-light)}
-.pub-poster-bio{font-size:0.75rem;color:rgba(255,255,255,0.55);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pub-poster-bio{font-size:0.75rem;color:rgba(255,255,255,0.55);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .pub-poster-tag{
   display:inline-flex;align-items:center;gap:4px;font-size:0.65rem;font-weight:700;
   padding:3px 10px;border-radius:var(--r-pill);background:rgba(212,175,55,0.15);
@@ -310,7 +339,7 @@ h1,h2,h3,h4{font-family:'Cairo',sans-serif;font-weight:700;line-height:1.15}
 .badge-out{background:rgba(225,29,72,0.85);color:white}
 
 .book-info{padding:var(--sp-md)}
-.book-title{font-family:'Cairo';font-size:0.95rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px}
+.book-title{font-family:'Cairo';font-size:0.95rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:3px}
 .book-author{font-size:0.78rem;color:var(--txt-secondary);margin-bottom:8px}
 .book-footer{display:flex;justify-content:space-between;align-items:center}
 .book-price{font-family:'Outfit';font-weight:800;font-size:1.05rem;color:var(--clr-gold-dark)}
@@ -518,17 +547,58 @@ h1,h2,h3,h4{font-family:'Cairo',sans-serif;font-weight:700;line-height:1.15}
 .auth-or::before,.auth-or::after{content:'';flex:1;height:1px;background:var(--clr-border-clay)}
 
 /* ══════════════════════════════════════════════════════════
-   PROFILE / E-WALLET / TRACKING
+   CART DRAWER (Glassmorphism & Gold)
    ══════════════════════════════════════════════════════════ */
-.profile-overlay{position:fixed;inset:0;background:rgba(15,15,15,0.5);backdrop-filter:blur(4px);z-index:7000;opacity:0;pointer-events:none;transition:opacity .3s}
-.profile-overlay.open{opacity:1;pointer-events:auto}
-.profile-panel{
+.cart-overlay{position:fixed;inset:0;background:rgba(15,15,15,0.6);backdrop-filter:blur(6px);z-index:8000;opacity:0;pointer-events:none;transition:opacity .3s}
+.cart-overlay.open{opacity:1;pointer-events:auto}
+.cart-panel{
   position:fixed;top:0;left:0;width:min(420px,92vw);height:100vh;
-  background:var(--clr-surface);z-index:7100;transform:translateX(-100%);
-  transition:transform .4s cubic-bezier(.4,0,.2,1);overflow-y:auto;
+  background:rgba(25,25,25,0.75);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-right:1px solid rgba(212,175,55,0.2);z-index:8100;transform:translateX(-100%);
+  transition:transform .4s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
 }
-.profile-panel.open{transform:translateX(0)}
-.profile-header{padding:var(--sp-lg);border-bottom:1px solid var(--clr-border-clay);display:flex;align-items:center;justify-content:space-between}
+.cart-panel.open{transform:translateX(0)}
+.cart-header{padding:var(--sp-lg);border-bottom:1px solid rgba(212,175,55,0.2);display:flex;align-items:center;justify-content:space-between;color:var(--clr-gold)}
+.cart-body{flex:1;overflow-y:auto;padding:var(--sp-md);display:flex;flex-direction:column;gap:var(--sp-md)}
+.cart-footer{padding:var(--sp-lg);border-top:1px solid rgba(212,175,55,0.2);background:rgba(15,15,15,0.6)}
+.cart-item{display:flex;gap:var(--sp-md);background:var(--clr-surface);padding:var(--sp-md);border-radius:var(--r-md);border:1px solid var(--clr-border-clay);position:relative}
+.cart-item-img{width:60px;height:85px;border-radius:var(--r-sm);object-fit:cover;background:var(--clr-clay);flex-shrink:0}
+.cart-item-info{flex:1;display:flex;flex-direction:column;justify-content:space-between}
+.cart-item-title{font-weight:700;font-size:0.95rem;color:var(--txt-main);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-clamp:2}
+.cart-item-price{color:var(--clr-gold);font-weight:800;font-size:0.9rem}
+.cart-item-controls{display:flex;align-items:center;gap:12px;margin-top:8px}
+.qty-btn{width:26px;height:26px;border-radius:4px;border:1px solid var(--clr-gold);background:transparent;color:var(--clr-gold);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease}
+.qty-btn:not(:disabled):hover{background:var(--clr-gold);color:var(--clr-royal)}
+.qty-btn:disabled{opacity:0.3;cursor:not-allowed}
+.cart-item-qty{font-weight:700;font-size:0.95rem;min-width:20px;text-align:center}
+.cart-item-remove{position:absolute;top:10px;left:10px;color:var(--clr-danger);background:transparent;border:none;cursor:pointer;opacity:0.6;transition:opacity .2s;font-size:1.1rem}
+.cart-item-remove:hover{opacity:1}
+
+/* ══════════════════════════════════════════════════════════
+   SETTINGS MODAL / E-WALLET / TRACKING
+   ══════════════════════════════════════════════════════════ */
+.profile-overlay{position:fixed;inset:0;background:rgba(10,10,10,0.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:7000;opacity:0;pointer-events:none;transition:opacity .3s}
+.profile-overlay.open{opacity:1;pointer-events:auto;animation: fadeIn 0.3s forwards;}
+.settings-modal{
+  position:fixed;inset:0;z-index:7100;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;opacity:0;transition:opacity .4s cubic-bezier(.4,0,.2,1);padding: var(--sp-lg);
+}
+.settings-modal.open{opacity:1;pointer-events:auto}
+.settings-modal-inner {
+  width: min(440px, 100%); max-height: calc(100vh - 40px); overflow-y: auto;
+  background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--clr-border); border-radius: var(--r-xl);
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(212,175,55,0.1); 
+  transform: translateY(20px) scale(0.95); transition: transform .4s cubic-bezier(.4,0,.2,1); padding-bottom: var(--sp-lg);
+}
+.settings-modal.open .settings-modal-inner { transform: translateY(0) scale(1); }
+.settings-header{padding:var(--sp-xl) var(--sp-xl) var(--sp-md);display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:1.2rem;color:var(--clr-gold)}
+.settings-close{color:var(--txt-muted);font-size:1.2rem;transition:color var(--t-fast);background:none;border:none;}
+.settings-close:hover{color:var(--clr-danger)}
+.settings-body{padding:0 var(--sp-xl)}
+.settings-section{margin-top:var(--sp-xl)}
+.settings-title{font-size:1.05rem;font-weight:800;margin-bottom:var(--sp-sm)}
+
 
 /* Wallet Card */
 .wallet-card{

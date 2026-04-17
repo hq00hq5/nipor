@@ -4,8 +4,10 @@
 // ╚══════════════════════════════════════════════════════╝
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-import { getStorage } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+import {
+  getFirestore, collection, addDoc, getDocs, onSnapshot,
+  doc, deleteDoc, updateDoc, query, orderBy, serverTimestamp, increment
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -20,11 +22,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
-const storage = getStorage(app);
 const auth    = getAuth(app);
 
+// ── Diagnostic: log init status ──
+console.log('%c🔥 Firebase initialized — project: ' + firebaseConfig.projectId, 'color:#D4AF37;font-weight:700');
+
 export {
-  app, db, storage, auth,
+  app, db, auth,
+  // Firestore utilities
   collection, addDoc, getDocs, onSnapshot,
-  doc, deleteDoc, updateDoc, query, orderBy
+  doc, deleteDoc, updateDoc, query, orderBy, serverTimestamp, increment
 };

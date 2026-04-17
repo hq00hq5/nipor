@@ -19,7 +19,7 @@ function persist(k,v) { localStorage.setItem(k, typeof v === 'string' ? v : JSON
 
 // ═══ TOAST ═══
 function toast(msg, type='info', dur=3200) {
-  const ic = {info:'ℹ️',success:'✅',error:'❌',warn:'⚠️',gold:'✦'};
+  const ic = {info:'<i class="fa-solid fa-circle-info"></i>',success:'<i class="fa-solid fa-circle-check"></i>',error:'<i class="fa-solid fa-circle-xmark"></i>',warn:'<i class="fa-solid fa-triangle-exclamation"></i>',gold:'<i class="fa-solid fa-star"></i>'};
   const el = document.createElement('div');
   el.className = `toast toast-${type}`;
   el.innerHTML = `<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;
@@ -57,7 +57,7 @@ function renderPubCard(pub, i) {
   const card = document.createElement('article');
   card.className = 'pub-poster';
   const grad = PUB_GRADS[i % PUB_GRADS.length];
-  const av = pub.icon ? `<img src="${esc(pub.icon)}" alt="${esc(pub.name)}"/>` : `<span style="font-size:1.6rem">${pub.emoji||'🏛️'}</span>`;
+  const av = pub.icon ? `<img src="${esc(pub.icon)}" alt="${esc(pub.name)}"/>` : `<span style="font-size:1.6rem"><i class="fa-solid fa-building-columns"></i></span>`;
   card.innerHTML = `
     <div class="pub-poster-bg" style="background:${grad}"></div>
     <div class="pub-poster-overlay">
@@ -72,17 +72,17 @@ function renderPubCard(pub, i) {
 
 // ═══ CATEGORY TILE ═══
 const CAT_MAP = {
-  'رواية':{bg:'linear-gradient(145deg,#667eea,#764ba2)',icon:'📖'},
-  'تاريخ':{bg:'linear-gradient(145deg,#f093fb,#f5576c)',icon:'🏛️'},
-  'علوم':{bg:'linear-gradient(145deg,#4facfe,#00f2fe)',icon:'🔬'},
-  'فلسفة':{bg:'linear-gradient(145deg,#43e97b,#38f9d7)',icon:'🤔'},
-  'أعمال':{bg:'linear-gradient(145deg,#fa709a,#fee140)',icon:'💼'},
-  'تقنية':{bg:'linear-gradient(145deg,#30cfd0,#330867)',icon:'💻'},
-  'أدب':{bg:'linear-gradient(145deg,#a18cd1,#fbc2eb)',icon:'✍️'},
-  'شعر':{bg:'linear-gradient(145deg,#e0c3fc,#8ec5fc)',icon:'🌸'},
-  'طفل':{bg:'linear-gradient(145deg,#fccb90,#d57eeb)',icon:'🧒'},
-  'سياسة':{bg:'linear-gradient(145deg,#f7797d,#FBD786)',icon:'⚖️'},
-  'default':{bg:'linear-gradient(145deg,#252525,#4a4a4a)',icon:'📚'},
+  'رواية':{bg:'linear-gradient(145deg,#667eea,#764ba2)',icon:'<i class="fa-solid fa-book-open"></i>'},
+  'تاريخ':{bg:'linear-gradient(145deg,#f093fb,#f5576c)',icon:'<i class="fa-solid fa-landmark"></i>'},
+  'علوم':{bg:'linear-gradient(145deg,#4facfe,#00f2fe)',icon:'<i class="fa-solid fa-flask"></i>'},
+  'فلسفة':{bg:'linear-gradient(145deg,#43e97b,#38f9d7)',icon:'<i class="fa-solid fa-brain"></i>'},
+  'أعمال':{bg:'linear-gradient(145deg,#fa709a,#fee140)',icon:'<i class="fa-solid fa-briefcase"></i>'},
+  'تقنية':{bg:'linear-gradient(145deg,#30cfd0,#330867)',icon:'<i class="fa-solid fa-laptop-code"></i>'},
+  'أدب':{bg:'linear-gradient(145deg,#a18cd1,#fbc2eb)',icon:'<i class="fa-solid fa-feather-pointed"></i>'},
+  'شعر':{bg:'linear-gradient(145deg,#e0c3fc,#8ec5fc)',icon:'<i class="fa-solid fa-leaf"></i>'},
+  'طفل':{bg:'linear-gradient(145deg,#fccb90,#d57eeb)',icon:'<i class="fa-solid fa-child-reaching"></i>'},
+  'سياسة':{bg:'linear-gradient(145deg,#f7797d,#FBD786)',icon:'<i class="fa-solid fa-scale-balanced"></i>'},
+  'default':{bg:'linear-gradient(145deg,#252525,#4a4a4a)',icon:'<i class="fa-solid fa-book"></i>'},
 };
 function renderCatTile(cat, cnt) {
   const s = CAT_MAP[cat] || CAT_MAP.default;
@@ -99,9 +99,9 @@ function renderBookCard(book) {
   const card = document.createElement('article');
   card.className = 'book-card';
   const isFav = S.favs.some(f=>f.id===book.id);
-  const cover = book.cover ? `<img src="${esc(book.cover)}" alt="${esc(book.title)}" loading="lazy"/>` : `<div class="book-cover-ph">📗</div>`;
-  const price = book.price ? `${Number(book.price).toLocaleString('ar-SA')} ر.س` : 'مجاني';
-  const oos = book.stock === 0;
+  const cover = book.cover ? `<img src="${esc(book.cover)}" alt="${esc(book.title)}" loading="lazy"/>` : `<div class="book-cover-ph"><i class="fa-solid fa-book"></i></div>`;
+  const price = book.price ? `${Number(book.price).toLocaleString('ar-SA')} د.ع` : 'مجاني';
+  const oos = book.stockQuantity === 0;
   card.innerHTML = `
     <div class="book-cover">${cover}${oos?'<span class="book-badge badge-out">نفذ</span>':'<span class="book-badge badge-new">جديد</span>'}</div>
     <div class="book-info">
@@ -118,7 +118,7 @@ function renderBookCard(book) {
     </div>`;
   card.querySelector('[data-cart]')?.addEventListener('click', e => { e.stopPropagation(); addToCart(book); haptic(card); });
   card.querySelector('[data-fav]')?.addEventListener('click', e => { e.stopPropagation(); toggleFav(book); });
-  card.querySelector('[data-notify]')?.addEventListener('click', e => { e.stopPropagation(); toast('سيتم إشعارك عند التوفر 🔔','gold'); });
+  card.querySelector('[data-notify]')?.addEventListener('click', e => { e.stopPropagation(); toast('سيتم إشعارك عند التوفر','gold'); });
   card.addEventListener('click', () => openDetail(book));
   return card;
 }
@@ -127,14 +127,14 @@ function emptyEl(icon,title,desc) { const el=document.createElement('div');el.cl
 // ═══ RENDER FUNCTIONS ═══
 function renderPubs(pubs) {
   const g = $('pub-grid'); g.innerHTML = '';
-  if (!pubs.length) { g.appendChild(emptyEl('🏛️','لا توجد دور نشر','أضف من لوحة الإدارة')); return; }
+  if (!pubs.length) { g.appendChild(emptyEl('<i class="fa-solid fa-building-columns"></i>','لا توجد دور نشر','أضف من لوحة الإدارة')); return; }
   pubs.forEach((p,i) => g.appendChild(renderPubCard(p,i)));
 }
 function renderCats(books) {
   const g = $('cat-grid'); g.innerHTML = '';
   const counts = {};
   books.forEach(b => { if(b.category) counts[b.category]=(counts[b.category]||0)+1; });
-  if (!Object.keys(counts).length) { g.appendChild(emptyEl('🗂️','لا توجد تصنيفات','ستظهر عند إضافة كتب')); return; }
+  if (!Object.keys(counts).length) { g.appendChild(emptyEl('<i class="fa-solid fa-tags"></i>','لا توجد تصنيفات','ستظهر عند إضافة كتب')); return; }
   Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([c,n])=>g.appendChild(renderCatTile(c,n)));
 }
 function renderRow(containerId, books) {
@@ -147,7 +147,7 @@ function renderSponsors(pubs) {
   pubs.slice(0,8).forEach(p => {
     const el = document.createElement('div');
     el.className = 'sponsor-logo';
-    el.innerHTML = p.icon ? `<img src="${esc(p.icon)}" alt="${esc(p.name)}"/>` : `<span class="sponsor-emoji">${p.emoji||'🏛️'}</span>`;
+    el.innerHTML = p.icon ? `<img src="${esc(p.icon)}" alt="${esc(p.name)}"/>` : `<span class="sponsor-emoji"><i class="fa-solid fa-building-columns"></i></span>`;
     el.addEventListener('click', () => drillDown('publisher', p.id, p.name));
     r.appendChild(el);
   });
@@ -225,16 +225,16 @@ function initSmartFilters() {
 function openDetail(book) {
   const body = $('detail-body');
   const pub = S.publishers.find(p=>p.id===book.publisherId);
-  const price = book.price?`${Number(book.price).toLocaleString('ar-SA')} ر.س`:'مجاني';
+  const price = book.price?`${Number(book.price).toLocaleString('ar-SA')} د.ع`:'مجاني';
   const isFav = S.favs.some(f=>f.id===book.id);
-  const oos = book.stock===0;
+  const oos = book.stockQuantity===0;
   // Images: cover + gallery
   const images = book.gallery && book.gallery.length ? [book.cover,...book.gallery].filter(Boolean) : book.cover ? [book.cover] : [];
 
   body.innerHTML = `
     <!-- GALLERY -->
     <div class="detail-gallery">
-      ${images.length ? images.map((src,i)=>`<div class="gallery-slide ${i===0?'active':''}" data-slide="${i}"><img src="${esc(src)}" alt="صورة ${i+1}" data-zoom="${esc(src)}"/></div>`).join('') : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:4rem;color:var(--clr-gold)">📗</div>'}
+      ${images.length ? images.map((src,i)=>`<div class="gallery-slide ${i===0?'active':''}" data-slide="${i}"><img src="${esc(src)}" alt="صورة ${i+1}" data-zoom="${esc(src)}"/></div>`).join('') : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:4rem;color:var(--clr-gold)"><i class="fa-solid fa-book"></i></div>'}
       ${images.length>1?`<div class="gallery-nav">${images.map((_,i)=>`<div class="gallery-dot ${i===0?'active':''}" data-dot="${i}"></div>`).join('')}</div>`:''}
     </div>
     <div class="detail-info">
@@ -248,7 +248,7 @@ function openDetail(book) {
         <tr><td>نوع الغلاف</td><td>${esc(book.coverType||'—')}</td></tr>
         <tr><td>الحالة</td><td>${oos?'<span style="color:var(--clr-danger);font-weight:700">نفذت الكمية</span>':'<span style="color:var(--clr-success);font-weight:700">متوفر</span>'}</td></tr>
       </table>
-      <div class="dp-bundle"><i class="fa-solid fa-gift dp-bundle-icon"></i><div class="dp-bundle-text"><div class="dp-bundle-title">حزمة القارئ 📦</div><div class="dp-bundle-desc">اشترِ كتابين إضافيين من نفس الناشر واحصل على خصم 10%</div></div></div>
+      <div class="dp-bundle"><i class="fa-solid fa-gift dp-bundle-icon"></i><div class="dp-bundle-text"><div class="dp-bundle-title">حزمة القارئ <i class="fa-solid fa-box"></i></div><div class="dp-bundle-desc">اشترِ كتابين إضافيين من نفس الناشر واحصل على خصم 10%</div></div></div>
       <div class="dp-actions">
         ${oos
           ?`<button class="btn btn-primary btn-lg" style="flex:1" id="dp-notify"><i class="fa-solid fa-bell"></i> أخبرني عند التوفر</button>`
@@ -257,7 +257,7 @@ function openDetail(book) {
         <button class="btn ${isFav?'btn-gold':'btn-ghost'} btn-lg" id="dp-fav"><i class="fa-${isFav?'solid':'regular'} fa-heart"></i></button>
       </div>
       <!-- Gifting -->
-      <div class="gift-row" id="gift-row"><div class="gift-switch" id="gift-switch"></div><span>🎁 تغليف كهدية فاخرة</span></div>
+      <div class="gift-row" id="gift-row"><div class="gift-switch" id="gift-switch"></div><span><i class="fa-solid fa-gift"></i> تغليف كهدية فاخرة</span></div>
       <div class="gift-msg" id="gift-msg"><textarea class="gift-msg-input" placeholder="اكتب رسالتك الشخصية هنا…"></textarea></div>
     </div>`;
 
@@ -281,7 +281,7 @@ function openDetail(book) {
   body.querySelector('#dp-fav')?.addEventListener('click', () => { toggleFav(book); openDetail(book); });
   // Gift toggle
   const gs = body.querySelector('#gift-switch');
-  gs?.addEventListener('click', () => { gs.classList.toggle('on'); body.querySelector('#gift-msg').classList.toggle('open',gs.classList.contains('on')); toast(gs.classList.contains('on')?'تغليف كهدية 🎁':'تم إلغاء الهدية','gold'); });
+  gs?.addEventListener('click', () => { gs.classList.toggle('on'); body.querySelector('#gift-msg').classList.toggle('open',gs.classList.contains('on')); toast(gs.classList.contains('on')?'تغليف كهدية':'تم إلغاء الهدية','gold'); });
 
   $('detail-overlay').classList.add('active');
   $('detail-panel').classList.add('active');
@@ -301,11 +301,11 @@ function updateFavUI() {
   $('fav-count-badge').textContent = `(${c})`;
   $('fav-nav-badge').textContent = c; $('fav-nav-badge').classList.toggle('hidden',c===0);
   const body = $('fav-body'); body.innerHTML = '';
-  if (!c) { body.innerHTML = '<div class="fav-empty"><span style="font-size:3rem;opacity:.3">💔</span><span>لا توجد كتب في المفضلة</span></div>'; return; }
+  if (!c) { body.innerHTML = '<div class="fav-empty"><i class="fa-solid fa-heart-crack" style="font-size:3rem;opacity:.3"></i><br><span>لا توجد كتب في المفضلة</span></div>'; return; }
   S.favs.forEach(f => {
     const d = document.createElement('div'); d.className = 'fav-item';
-    d.innerHTML = `<div class="fav-item-cover">${f.cover?`<img src="${esc(f.cover)}"/>`:'<div style="display:flex;align-items:center;justify-content:center;height:100%">📗</div>'}</div>
-      <div class="fav-item-info"><div class="fav-item-title">${esc(f.title)}</div><div class="fav-item-author">${esc(f.author||'')}</div><div class="fav-item-price">${f.price?Number(f.price).toLocaleString('ar-SA')+' ر.س':'مجاني'}</div></div>
+    d.innerHTML = `<div class="fav-item-cover">${f.cover?`<img src="${esc(f.cover)}"/>`:'<div style="display:flex;align-items:center;justify-content:center;height:100%"><i class="fa-solid fa-book"></i></div>'}</div>
+      <div class="fav-item-info"><div class="fav-item-title">${esc(f.title)}</div><div class="fav-item-author">${esc(f.author||'')}</div><div class="fav-item-price">${f.price?Number(f.price).toLocaleString('ar-SA')+' د.ع':'مجاني'}</div></div>
       <button class="fav-item-remove"><i class="fa-solid fa-xmark"></i></button>`;
     d.querySelector('.fav-item-remove').addEventListener('click', ()=>{const b=S.books.find(x=>x.id===f.id)||f;toggleFav(b);});
     body.appendChild(d);
@@ -315,9 +315,16 @@ function openFav() { $('fav-panel').classList.add('open'); $('fav-overlay').clas
 function closeFav() { $('fav-panel').classList.remove('open'); $('fav-overlay').classList.remove('open'); document.body.style.overflow=''; }
 
 // ═══ CART ═══
+function openCart() { $('cart-panel').classList.add('open'); $('cart-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCart() { $('cart-panel').classList.remove('open'); $('cart-overlay').classList.remove('open'); document.body.style.overflow=''; }
+
 function addToCart(book) {
+  const maxStock = book.stockQuantity ?? Infinity;
   const ex = S.cart.find(i=>i.id===book.id);
-  if (ex) ex.qty+=1; else S.cart.push({id:book.id,title:book.title,price:book.price,qty:1});
+  const currentQty = ex ? ex.qty : 0;
+  if(currentQty >= maxStock) { toast(`نفذ المخزون: متاح ${maxStock} فقط`,'warn'); return; }
+  
+  if (ex) ex.qty+=1; else S.cart.push({id:book.id,title:book.title,price:book.price,cover:book.cover,stockQuantity:book.stockQuantity,qty:1});
   persist('nip_cart',S.cart); updateCartUI();
 }
 function updateCartUI() {
@@ -326,9 +333,56 @@ function updateCartUI() {
   const fc = $('floating-cart');
   if (count>0) { fc.classList.add('visible'); fc.style.display=''; } else fc.classList.remove('visible');
   $('cart-badge').textContent=count; $('cart-badge').classList.toggle('hidden',count===0);
-  $('cart-total').textContent = total>0?`${total.toLocaleString('ar-SA')} ر.س`:'0 ر.س';
+  $('cart-total').textContent = total>0?`${total.toLocaleString('ar-SA')} د.ع`:'0 د.ع';
   $('cart-nav-badge').textContent=count; $('cart-nav-badge').classList.toggle('hidden',count===0);
   if(count===0) $('cart-restore').classList.remove('visible');
+
+  const cb = $('cart-body');
+  if(cb) {
+    if(!S.cart.length) {
+      cb.innerHTML = '<div class="empty-state"><div class="empty-icon" style="font-size:3rem;opacity:.3"><i class="fa-solid fa-cart-shopping"></i></div><div class="empty-title">السلة فارغة</div></div>';
+    } else {
+      cb.innerHTML = '';
+      S.cart.forEach((item) => {
+        const coverSrc = item.cover ? `<img src="${esc(item.cover)}" class="cart-item-img"/>` : `<div class="cart-item-img" style="display:flex;align-items:center;justify-content:center;font-size:1.5rem"><i class="fa-solid fa-book"></i></div>`;
+        const itemPrice = item.price ? `${Number(item.price).toLocaleString('ar-SA')} د.ع` : 'مجاني';
+        const itemTotal = item.price ? `${(Number(item.price)*item.qty).toLocaleString('ar-SA')} د.ع` : 'مجاني';
+        const el = document.createElement('div');
+        el.className = 'cart-item';
+        el.innerHTML = `
+          ${coverSrc}
+          <div class="cart-item-info">
+            <div class="cart-item-title">${esc(item.title)}</div>
+            <div class="cart-item-price">${itemTotal} <span style="font-size:0.75rem;color:var(--txt-muted);font-weight:400">(${itemPrice} للقطعة)</span></div>
+            <div class="cart-item-controls">
+              <button class="qty-btn dec" data-id="${item.id}"><i class="fa-solid fa-minus"></i></button>
+              <div class="cart-item-qty">${item.qty}</div>
+              <button class="qty-btn inc" data-id="${item.id}"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </div>
+          <button class="cart-item-remove" data-id="${item.id}"><i class="fa-solid fa-trash-can"></i></button>
+        `;
+        cb.appendChild(el);
+      });
+      cb.querySelectorAll('.dec').forEach(btn => btn.addEventListener('click', (e) => {
+        const it = S.cart.find(i=>i.id===e.currentTarget.dataset.id);
+        if(it) { it.qty--; if(it.qty<=0) S.cart = S.cart.filter(i=>i.id!==it.id); persist('nip_cart',S.cart); updateCartUI(); }
+      }));
+      cb.querySelectorAll('.inc').forEach(btn => btn.addEventListener('click', (e) => {
+        const it = S.cart.find(i=>i.id===e.currentTarget.dataset.id);
+        if(it) {
+           const max = it.stockQuantity ?? Infinity;
+           if(it.qty >= max) toast(`الكمية المطلوبة غير متوفرة`,'warn');
+           else { it.qty++; persist('nip_cart',S.cart); updateCartUI(); }
+        }
+      }));
+      cb.querySelectorAll('.cart-item-remove').forEach(btn => btn.addEventListener('click', (e) => {
+        S.cart = S.cart.filter(i=>i.id!==e.currentTarget.dataset.id); persist('nip_cart',S.cart); updateCartUI();
+      }));
+    }
+  }
+  const dTot = $('drawer-cart-total');
+  if(dTot) dTot.textContent = total>0?`${total.toLocaleString('ar-SA')} د.ع`:'0 د.ع';
 }
 
 // ═══ HAPTIC ═══
@@ -348,34 +402,91 @@ function initCart() {
     if(cx<innerWidth/2){fc.style.left=SNAP+'px';fc.style.right='auto'}else{fc.style.right=SNAP+'px';fc.style.left='auto'}
     fc.style.top=Math.max(SNAP,Math.min(r.top,innerHeight-r.height-SNAP))+'px';fc.style.bottom='auto';
   });
-  rs.addEventListener('click', ()=>{rs.classList.remove('visible');fc.style.display='';fc.style.left=SNAP+'px';fc.style.bottom='28px';fc.style.top='auto';fc.style.right='auto';fc.classList.add('visible');toast('تم استعادة السلة 🛒','success')});
-  $('cart-nav')?.addEventListener('click', ()=>{if(!S.cart.length){toast('السلة فارغة','info');return}rs.classList.remove('visible');fc.style.display='';fc.style.left=SNAP+'px';fc.style.bottom='28px';fc.style.top='auto';fc.style.right='auto';fc.classList.add('visible')});
+  fc.addEventListener('click', openCart);
+  rs.addEventListener('click', ()=>{rs.classList.remove('visible');fc.style.display='';fc.style.left=SNAP+'px';fc.style.bottom='28px';fc.style.top='auto';fc.style.right='auto';fc.classList.add('visible');toast('تم استعادة السلة','success')});
+  $('cart-nav')?.addEventListener('click', openCart);
 }
 
 // ═══ AUTH MODAL ═══
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js';
+import { auth, doc, updateDoc, increment } from '../firebase.js';
+
+let currentUser = null;
 function initAuth() {
-  $('user-btn')?.addEventListener('click', ()=>$('auth-overlay').classList.add('active'));
+  onAuthStateChanged(auth, user => { currentUser = user; });
+  // user-btn handles settings modal
   $('auth-close')?.addEventListener('click', ()=>$('auth-overlay').classList.remove('active'));
   $('auth-email-btn')?.addEventListener('click', ()=>{
     const e=$('auth-email').value.trim();
     if(!e){toast('أدخل البريد الإلكتروني','error');return}
-    toast('تم إرسال رابط الدخول ✉️','success');$('auth-overlay').classList.remove('active');
+    toast('تم المحاكاة — مسجل الدخول الان','success');$('auth-overlay').classList.remove('active'); currentUser = {uid:'dummy'};
   });
   $('auth-phone-btn')?.addEventListener('click', ()=>{
     const p=$('auth-phone').value.trim();
     if(!p){toast('أدخل رقم الهاتف','error');return}
-    toast('تم إرسال رمز OTP 📱','success');$('auth-overlay').classList.remove('active');
+    toast('تمت المحاكاة — مسجل الدخول الان','success');$('auth-overlay').classList.remove('active'); currentUser = {uid:'dummy'};
   });
+  
+  // Checkout Gatekeeper
+  $('cart-checkout')?.addEventListener('click', () => {
+    if (!S.cart.length) { toast('السلة فارغة','info'); return; }
+    if (!currentUser) {
+      closeCart();
+      $('auth-overlay').classList.add('active');
+      toast('الرجاء تسجيل الدخول لإتمام الطلب','warn');
+    } else {
+      placeOrder();
+    }
+  });
+}
+
+async function placeOrder() {
+  toast('جاري إرسال الطلب...', 'gold');
+  try {
+    const promises = S.cart.map(item => {
+      if (item.stockQuantity !== undefined && item.stockQuantity !== null && item.stockQuantity !== '') {
+        const d = doc(db, 'books', item.id);
+        return updateDoc(d, {
+          stockQuantity: increment(-item.qty)
+        });
+      }
+    });
+    await Promise.all(promises);
+    S.cart = [];
+    persist('nip_cart', S.cart);
+    updateCartUI();
+    closeCart();
+    toast('تم تأكيد الطلب بنجاح', 'success');
+  } catch (err) {
+    console.error(err);
+    toast('حدث خطأ أثناء تأكيد الطلب', 'error');
+  }
 }
 
 // ═══ PROFILE / E-WALLET ═══
 function initProfile() {
-  // Open profile after "auth" (simulate)
-  $('user-btn')?.addEventListener('dblclick', ()=>{$('auth-overlay').classList.remove('active');openProfile()});
+  $('user-btn')?.addEventListener('click', openProfile);
   $('profile-close')?.addEventListener('click', closeProfile);
   $('profile-overlay')?.addEventListener('click', closeProfile);
   $('wallet-balance').textContent = S.wallet.toFixed(2);
-  $('wallet-topup')?.addEventListener('click', ()=>{S.wallet+=100;persist('nip_wallet',S.wallet.toString());$('wallet-balance').textContent=S.wallet.toFixed(2);toast('تم شحن 100 ر.س 💰','gold')});
+  $('wallet-topup')?.addEventListener('click', ()=>{S.wallet+=100;persist('nip_wallet',S.wallet.toString());$('wallet-balance').textContent=S.wallet.toFixed(2);toast('تم شحن 100 د.ع','gold')});
+}
+
+function initTheme() {
+  const btns = document.querySelectorAll('#theme-switch .btn');
+  btns.forEach(b => b.addEventListener('click', () => {
+    btns.forEach(bb => bb.classList.remove('active'));
+    b.classList.add('active');
+    const t = b.dataset.theme;
+    if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+    else document.documentElement.removeAttribute('data-theme');
+    persist('nip_theme', t);
+  }));
+  const stored = localStorage.getItem('nip_theme');
+  if (stored === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    btns.forEach(b => b.classList.toggle('active', b.dataset.theme==='light'));
+  }
 }
 function openProfile(){$('profile-panel').classList.add('open');$('profile-overlay').classList.add('open');document.body.style.overflow='hidden'}
 function closeProfile(){$('profile-panel').classList.remove('open');$('profile-overlay').classList.remove('open');document.body.style.overflow=''}
@@ -387,7 +498,7 @@ function initGPS() {
     st.textContent='جاري تحديد الموقع…';
     if(!navigator.geolocation){st.textContent='المتصفح لا يدعم GPS';toast('GPS غير مدعوم','error');return}
     navigator.geolocation.getCurrentPosition(
-      pos=>{st.textContent=`📍 ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} — دقة: ${pos.coords.accuracy.toFixed(0)}م`;toast('تم تحديد الموقع بنجاح 📍','success')},
+      pos=>{st.textContent=`<i class="fa-solid fa-location-dot"></i> ${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)} — دقة: ${pos.coords.accuracy.toFixed(0)}م`;toast('تم تحديد الموقع بنجاح','success')},
       err=>{st.textContent='فشل تحديد الموقع: '+err.message;toast('فشل GPS','error')},
       {enableHighAccuracy:true,timeout:10000}
     );
@@ -410,7 +521,7 @@ function initFirestore() {
     S.publishers=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderPubs(S.publishers);renderSponsors(S.publishers);
     animCount($('stat-pubs'),S.publishers.length);
-  }, err=>{ console.warn('Firestore publishers:',err.message); $('pub-grid').innerHTML=''; $('pub-grid').appendChild(emptyEl('🔌','اتصال Firestore','تأكد من تفعيل Firestore')); });
+  }, err=>{ console.warn('Firestore publishers:',err.message); $('pub-grid').innerHTML=''; $('pub-grid').appendChild(emptyEl('<i class="fa-solid fa-plug"></i>','اتصال Firestore','تأكد من تفعيل Firestore')); });
 
   const booksQ = query(collection(db,'books'),orderBy('createdAt','desc'));
   onSnapshot(booksQ, snap=>{
@@ -425,7 +536,7 @@ function initFirestore() {
 // ═══ BOOT ═══
 document.addEventListener('DOMContentLoaded', ()=>{
   initTabs();initCart();initSearch();initInternalFilters();initSmartFilters();
-  initAuth();initProfile();initGPS();initZoom();initFirestore();
+  initAuth();initProfile();initGPS();initZoom();initFirestore();initTheme();
   updateCartUI();updateFavUI();
   $('back-nav')?.addEventListener('click',exitDrill);
   $('fav-toggle')?.addEventListener('click',openFav);
@@ -433,5 +544,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   $('fav-overlay')?.addEventListener('click',closeFav);
   $('detail-close')?.addEventListener('click',closeDetail);
   $('detail-overlay')?.addEventListener('click',closeDetail);
+  $('cart-close')?.addEventListener('click',closeCart);
+  $('cart-overlay')?.addEventListener('click',closeCart);
   console.log('%c📚 Nippur Final Vision','color:#D4AF37;font-weight:900;font-size:14px');
 });

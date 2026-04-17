@@ -24,7 +24,7 @@
     <button class="fav-close" id="fav-close"><i class="fa-solid fa-xmark"></i></button>
   </div>
   <div class="fav-body" id="fav-body">
-    <div class="fav-empty" id="fav-empty"><span style="font-size:3rem;opacity:.3">💔</span><span>لا توجد كتب في المفضلة</span></div>
+    <div class="fav-empty" id="fav-empty"><i class="fa-solid fa-heart-crack" style="font-size:3rem;opacity:.3"></i><br><span>لا توجد كتب في المفضلة</span></div>
   </div>
 </aside>
 
@@ -43,36 +43,77 @@
   </div>
 </div>
 
-<!-- ═══ PROFILE / E-WALLET PANEL ═══ -->
-<div class="profile-overlay" id="profile-overlay"></div>
-<aside class="profile-panel" id="profile-panel">
-  <div class="profile-header">
-    <span style="font-weight:800;font-size:1.1rem">حسابي</span>
-    <button class="fav-close" id="profile-close"><i class="fa-solid fa-xmark"></i></button>
+<!-- ═══ CART DRAWER ═══ -->
+<div class="cart-overlay" id="cart-overlay"></div>
+<aside class="cart-panel" id="cart-panel">
+  <div class="cart-header">
+    <span style="font-weight:800;font-size:1.1rem"><i class="fa-solid fa-basket-shopping"></i> سلة المشتريات</span>
+    <button class="fav-close" id="cart-close" style="color:var(--clr-gold)"><i class="fa-solid fa-xmark"></i></button>
   </div>
-  <div class="wallet-card">
-    <div style="font-size:0.75rem;color:rgba(212,175,55,0.6);margin-bottom:4px">رصيد المحفظة</div>
-    <div class="wallet-balance" id="wallet-balance">0.00</div>
-    <div class="wallet-label">ر.س</div>
-    <div class="wallet-actions">
-      <button class="btn btn-gold btn-sm" id="wallet-topup"><i class="fa-solid fa-plus"></i> شحن</button>
+  <div class="cart-body" id="cart-body">
+    <!-- Populated via JS -->
+  </div>
+  <div class="cart-footer">
+    <div style="display:flex;justify-content:space-between;margin-bottom:var(--sp-md);font-size:1.2rem;font-weight:800">
+      <span>المجموع:</span>
+      <span id="drawer-cart-total" style="color:var(--clr-gold)">0 د.ع</span>
     </div>
-  </div>
-  <!-- GPS Location -->
-  <div class="gps-section">
-    <h3 style="font-size:1rem;font-weight:800;margin-bottom:var(--sp-md)">📍 عنواني</h3>
-    <button class="gps-btn" id="gps-btn"><i class="fa-solid fa-location-crosshairs" style="color:var(--clr-gold)"></i> تحديد موقعي الحالي</button>
-    <div class="gps-status" id="gps-status"></div>
-  </div>
-  <!-- Live Tracking -->
-  <div class="tracking-section">
-    <h3 class="tracking-title"><i class="fa-solid fa-truck-fast" style="color:var(--clr-gold)"></i> تتبع الطلب</h3>
-    <div class="tracking-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div><div class="step-info"><div class="step-title">تم استلام الطلب</div><div class="step-time">—</div></div></div>
-    <div class="tracking-step" id="track-prep"><div class="step-icon"><i class="fa-solid fa-box"></i></div><div class="step-info"><div class="step-title">جاري التحضير</div><div class="step-time">—</div></div></div>
-    <div class="tracking-step" id="track-courier"><div class="step-icon"><i class="fa-solid fa-motorcycle"></i></div><div class="step-info"><div class="step-title">مع المندوب</div><div class="step-time">—</div></div></div>
-    <div class="tracking-step" id="track-done"><div class="step-icon"><i class="fa-solid fa-house"></i></div><div class="step-info"><div class="step-title">تم التوصيل</div><div class="step-time">—</div></div></div>
+    <button class="btn btn-gold btn-lg" style="width:100%" id="cart-checkout"><i class="fa-solid fa-credit-card"></i> إتمام الطلب الشراء</button>
   </div>
 </aside>
+
+<!-- ═══ SETTINGS MODAL ═══ -->
+<div class="profile-overlay" id="profile-overlay"></div>
+<div class="settings-modal" id="profile-panel">
+  <div class="settings-modal-inner">
+    <div class="settings-header">
+      <span><i class="fa-solid fa-user-gear"></i> إعدادات الحساب</span>
+      <button class="settings-close" id="profile-close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="settings-body">
+      <!-- Wallet -->
+      <div class="wallet-card">
+        <div style="font-size:0.75rem;color:rgba(212,175,55,0.6);margin-bottom:4px">رصيد المحفظة</div>
+        <div class="wallet-balance" id="wallet-balance">0.00</div>
+        <div class="wallet-label">د.ع</div>
+        <div class="wallet-actions">
+          <button class="btn btn-gold btn-sm" id="wallet-topup"><i class="fa-solid fa-plus"></i> شحن</button>
+        </div>
+      </div>
+      <!-- Theme Switcher -->
+      <div class="settings-section">
+        <h3 class="settings-title"><i class="fa-solid fa-palette"></i> المظهر</h3>
+        <p style="font-size:0.8rem;color:var(--txt-muted);margin-bottom:12px;">اختر تصميمك المفضل للمكتبة.</p>
+        <div class="theme-switch" id="theme-switch" style="display:flex;gap:10px;margin-bottom:var(--sp-lg)">
+          <button class="btn btn-ghost active" data-theme="dark"><i class="fa-solid fa-moon" style="color:var(--clr-gold)"></i> داكن</button>
+          <button class="btn btn-ghost" data-theme="light"><i class="fa-solid fa-sun" style="color:var(--clr-gold)"></i> فاتح</button>
+        </div>
+      </div>
+      <!-- Account Options (Placeholders) -->
+      <div class="settings-section">
+        <h3 class="settings-title"><i class="fa-solid fa-sliders"></i> الحساب</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <button class="btn btn-secondary" style="justify-content:flex-start"><i class="fa-solid fa-clock-rotate-left"></i> سجل الطلبات</button>
+          <button class="btn btn-secondary" style="justify-content:flex-start"><i class="fa-solid fa-gear"></i> إعدادات الحساب</button>
+        </div>
+      </div>
+      <!-- GPS -->
+      <div class="gps-section">
+        <h3 class="settings-title"><i class="fa-solid fa-map-location-dot"></i> عنواني</h3>
+        <button class="gps-btn" id="gps-btn"><i class="fa-solid fa-location-crosshairs" style="color:var(--clr-gold)"></i> تحديد موقعي الحالي</button>
+        <div class="gps-status" id="gps-status"></div>
+      </div>
+      <!-- Tracking Placeholder -->
+      <div class="tracking-section" style="margin-top:20px;padding-top:20px;border-top:1px solid var(--clr-border)">
+        <h3 class="settings-title"><i class="fa-solid fa-truck-fast"></i> تتبع الطلب</h3>
+        <div class="tracking-step done"><div class="step-icon"><i class="fa-solid fa-check"></i></div><div class="step-info"><div class="step-title">تم استلام الطلب</div><div class="step-time">—</div></div></div>
+        <div class="tracking-step" id="track-prep"><div class="step-icon"><i class="fa-solid fa-box"></i></div><div class="step-info"><div class="step-title">جاري التحضير</div><div class="step-time">—</div></div></div>
+        <div class="tracking-step" id="track-courier"><div class="step-icon"><i class="fa-solid fa-motorcycle"></i></div><div class="step-info"><div class="step-title">مع المندوب</div><div class="step-time">—</div></div></div>
+        <div class="tracking-step" id="track-done"><div class="step-icon"><i class="fa-solid fa-house"></i></div><div class="step-info"><div class="step-title">تم التوصيل</div><div class="step-time">—</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ BOOK DETAIL PANEL ═══ -->
 <div class="detail-overlay" id="detail-overlay"></div>
@@ -96,7 +137,6 @@
       <div class="nav-flex">
         <a href="index.html" class="logo-wrap">
           <div class="logo-icon">𒀭</div>
-          <div><div class="logo-title text-gold">نيپور</div><div class="logo-subtitle">PREMIUM LIBRARY</div></div>
         </a>
         <button class="back-nav" id="back-nav"><i class="fa-solid fa-arrow-right"></i> <span id="back-label">العودة</span></button>
         <div class="search-container" role="search">
@@ -107,7 +147,7 @@
           <a href="admin.html" class="btn btn-ghost btn-sm"><i class="fa-solid fa-gauge-high"></i> الإدارة</a>
           <button class="action-icon" id="fav-toggle" title="المفضلة"><i class="fa-regular fa-heart"></i><span class="badge-count hidden" id="fav-nav-badge">0</span></button>
           <button class="action-icon" id="cart-nav" title="السلة"><i class="fa-solid fa-basket-shopping"></i><span class="badge-count hidden" id="cart-nav-badge">0</span></button>
-          <button class="action-icon" id="user-btn" title="حسابي"><i class="fa-solid fa-user"></i></button>
+          <button class="action-icon" id="user-btn" title="حسابي / الإعدادات" style="color:var(--clr-gold);font-size:1.15rem"><i class="fa-solid fa-user-gear"></i></button>
         </nav>
       </div>
     </div>
@@ -120,8 +160,7 @@
 <section class="hero" id="hero-section">
   <div class="container">
     <div class="hero-content">
-      <div class="hero-badge"><span>✦</span> الوسيط الرقمي الفاخر</div>
-      <h1 class="hero-title"><span class="text-gold">اكتشف عالمك</span><br/>في كتاب</h1>
+      <h1 class="hero-title"><span class="text-gold">نيپور</span></h1>
       <p class="hero-subtitle">آلاف العناوين من أبرز دور النشر العربية والعالمية، بتصميم فاخر ملهم من حضارة سومر.</p>
       <div class="hero-cta">
         <a href="#discover" class="btn btn-gold btn-lg"><i class="fa-solid fa-compass"></i> استكشف المكتبة</a>
@@ -161,8 +200,8 @@
         <h2 class="section-title text-gold">تصفح المكتبة</h2>
         <div class="tab-switcher" role="tablist">
           <div class="tab-indicator" id="tab-indicator"></div>
-          <button class="tab-btn active" data-panel="publishers" id="tab-publishers">🏛️ دور النشر</button>
-          <button class="tab-btn" data-panel="categories" id="tab-categories">🎨 التصنيفات</button>
+          <button class="tab-btn active" data-panel="publishers" id="tab-publishers"><i class="fa-solid fa-building-columns"></i> دور النشر</button>
+          <button class="tab-btn" data-panel="categories" id="tab-categories"><i class="fa-solid fa-tags"></i> التصنيفات</button>
         </div>
       </div>
       <!-- Internal Filter Bar (shows during drill-down) -->
@@ -228,7 +267,7 @@
 <div class="floating-cart" id="floating-cart" title="اسحب • مرّر للإخفاء">
   <i class="fa-solid fa-bag-shopping"></i>
   <span class="cart-badge-float hidden" id="cart-badge">0</span>
-  <span class="cart-total-label" id="cart-total">0 ر.س</span>
+  <span class="cart-total-label" id="cart-total">0 د.ع</span>
 </div>
 <button class="cart-restore" id="cart-restore"><i class="fa-solid fa-bag-shopping"></i></button>
 
