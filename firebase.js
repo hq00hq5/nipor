@@ -25,7 +25,7 @@ const db  = getFirestore(app);
 const auth    = getAuth(app);
 
 // ── Diagnostic: log init status ──
-console.log('%c🔥 Firebase initialized — project: ' + firebaseConfig.projectId, 'color:#D4AF37;font-weight:700');
+console.log('%c Firebase initialized — project: ' + firebaseConfig.projectId, 'color:#D4AF37;font-weight:700');
 
 export {
   app, db, auth,

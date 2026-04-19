@@ -21,7 +21,7 @@ function animC(id,v){const el=$(id);if(!el)return;let c=0;const t=+v;if(isNaN(t)
 function toast(msg,type='info',dur=3200){
   const ic={info:'<i class="fa-solid fa-circle-info"></i>',success:'<i class="fa-solid fa-circle-check"></i>',error:'<i class="fa-solid fa-circle-xmark"></i>',warn:'<i class="fa-solid fa-triangle-exclamation"></i>',gold:'<i class="fa-solid fa-star"></i>'};
   const el=document.createElement('div');el.className=`toast toast-${type}`;
-  el.innerHTML=`<span>${ic[type]||'ℹ️'}</span><span>${msg}</span>`;
+  el.innerHTML=`<span>${ic[type]||ic.info}</span><span>${msg}</span>`;
   $('toastContainer').appendChild(el);
   setTimeout(()=>{el.classList.add('removing');el.addEventListener('animationend',()=>el.remove())},dur);
 }
@@ -94,7 +94,7 @@ function initPubForm() {
         updatedAt: serverTimestamp()
       };
 
-      console.log('💾 Saving publisher:', { editId: editId.value || '(new)', ...data, updatedAt: '(serverTimestamp)' });
+      console.log('[SAVE] Publisher:', { editId: editId.value || '(new)', ...data, updatedAt: '(serverTimestamp)' });
 
       if(editId.value){
         await updateDoc(doc(db,'publishers',editId.value), data);
@@ -102,7 +102,7 @@ function initPubForm() {
       } else {
         data.createdAt = serverTimestamp();
         const docRef = await addDoc(collection(db,'publishers'), data);
-        console.log('✅ Publisher saved with ID:', docRef.id);
+        console.log('[OK] Publisher saved with ID:', docRef.id);
         toast(`تمت إضافة "${name}"`,'success');
       }
 
@@ -122,7 +122,7 @@ function initPubForm() {
       } else {
         toast(`خطأ: ${err.message}`,'error',5000);
       }
-      console.error('🔴 Publisher save failed:', { code, message: err.message, stack: err.stack });
+      console.error('[ERR] Publisher save failed:', { code, message: err.message, stack: err.stack });
     }
     finally{setLoading(btn,false)}
   });
@@ -231,7 +231,7 @@ function initBookForm(){
         updatedAt: serverTimestamp()
       };
 
-      console.log('💾 Saving book:', { editId: editId.value || '(new)', title: t, author: a, price, stockQuantity: stock, category: cat, publisherId: pubId, coverUrl: cover ? cover.substring(0,50)+'…' : '(none)', galleryCount: gallery.length });
+      console.log('[SAVE] Book:', { editId: editId.value || '(new)', title: t, author: a, price, stockQuantity: stock, category: cat, publisherId: pubId, coverUrl: cover ? cover.substring(0,50)+'...' : '(none)', galleryCount: gallery.length });
 
       if(editId.value){
         await updateDoc(doc(db,'books',editId.value), data);
@@ -239,7 +239,7 @@ function initBookForm(){
       } else {
         data.createdAt = serverTimestamp();
         const docRef = await addDoc(collection(db,'books'), data);
-        console.log('✅ Book saved with ID:', docRef.id);
+        console.log('[OK] Book saved with ID:', docRef.id);
         toast(`تمت إضافة "${t}"`,'success');
       }
 
@@ -259,7 +259,7 @@ function initBookForm(){
       } else {
         toast(`خطأ: ${e.message}`,'error',5000);
       }
-      console.error('🔴 Book save failed:', { code, message: e.message, stack: e.stack });
+      console.error('[ERR] Book save failed:', { code, message: e.message, stack: e.stack });
     }
     finally{setLoading(btn,false)}
   });
@@ -320,18 +320,18 @@ function populateSelect(pubs){
 
 // ═══ FIRESTORE LIVE SYNC ═══
 function initFirestore(){
-  console.log('🔌 Connecting to Firestore…');
+  console.log('[INIT] Connecting to Firestore...');
 
   // ── Publishers listener ──
   const pubQ=query(collection(db,'publishers'),orderBy('weight','asc'));
   onSnapshot(pubQ,snap=>{
-    console.log(`📡 Publishers snapshot: ${snap.size} docs`);
+    console.log(`[SYNC] Publishers snapshot: ${snap.size} docs`);
     $('firebase-status-text').textContent='Firebase متصل';
     ST.publishers=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderPubs(ST.publishers);populateSelect(ST.publishers);animC('admin-stat-pubs',ST.publishers.length);
   },err=>{
     const code = err.code || '';
-    console.error('🔴 Firestore publishers error:', { code, message: err.message });
+    console.error('[ERR] Firestore publishers error:', { code, message: err.message });
     $('firebase-status-text').textContent='غير متصل';
     if(code === 'permission-denied') {
       toast('قواعد Firestore تمنع القراءة — افتح القواعد في Firebase Console','error',8000);
@@ -345,14 +345,14 @@ function initFirestore(){
   // ── Books listener ──
   const booksQ=query(collection(db,'books'),orderBy('createdAt','desc'));
   onSnapshot(booksQ,snap=>{
-    console.log(`📡 Books snapshot: ${snap.size} docs`);
+    console.log(`[SYNC] Books snapshot: ${snap.size} docs`);
     ST.books=snap.docs.map(d=>({id:d.id,...d.data()}));
     renderBooks(ST.books);renderCats(ST.books);
     animC('admin-stat-books',ST.books.length);
     animC('admin-stat-cats',new Set(ST.books.map(b=>b.category).filter(Boolean)).size);
   },err=>{
     const code = err.code || '';
-    console.error('🔴 Firestore books error:', { code, message: err.message });
+    console.error('[ERR] Firestore books error:', { code, message: err.message });
     if(code === 'permission-denied') {
       toast('قواعد Firestore تمنع قراءة الكتب','error',6000);
     } else if(code === 'failed-precondition') {
@@ -366,5 +366,5 @@ function initFirestore(){
 // ═══ BOOT ═══
 document.addEventListener('DOMContentLoaded',()=>{
   initNav();initPubForm();initBookForm();initFirestore();
-  console.log('%c⚙️ Nippur Admin — Royal Black Edition','color:#D4AF37;font-weight:900;font-size:14px');
+  console.log('%c Nippur Admin — Royal Black Edition','color:#D4AF37;font-weight:900;font-size:14px');
 });
