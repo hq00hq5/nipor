@@ -20,6 +20,7 @@ function persist(k,v) { localStorage.setItem(k, typeof v === 'string' ? v : JSON
 
 // ═══ TOAST ═══
 function toast(msg, type='info', dur=3200) {
+  if (msg !== 'عذراً، هذا الكتاب غير متوفر حالياً') return;
   const ic = {
     info:'<i class="fa-solid fa-circle-info"></i>',
     success:'<i class="fa-solid fa-circle-check"></i>',
@@ -92,26 +93,15 @@ function switchView(target) {
 
   // Animate out old view
   if (oldView) {
-    oldView.style.opacity = '0';
-    oldView.style.transform = 'translateY(12px)';
-    setTimeout(() => {
-      oldView.classList.remove('view--active');
-      oldView.style.opacity = '';
-      oldView.style.transform = '';
-    }, 150);
+    oldView.classList.remove('view--active');
   }
 
   // Animate in new view
   setTimeout(() => {
     if (newView) {
       newView.classList.add('view--active');
-      void newView.offsetHeight;
-      requestAnimationFrame(() => {
-        newView.style.opacity = '1';
-        newView.style.transform = 'translateY(0)';
-      });
     }
-  }, 160);
+  }, 50);
 
   S.activeView = target;
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -257,7 +247,7 @@ function renderCats(books) {
   // Populate search filter categories
   const catSelect = $('filter-category');
   if (catSelect) {
-    catSelect.innerHTML = '<option value="">— التصنيف —</option>';
+    catSelect.innerHTML = '<option value="">التصنيف</option>';
     Object.keys(counts).sort().forEach(c => {
       catSelect.innerHTML += `<option value="${esc(c)}">${esc(c)} (${counts[c]})</option>`;
     });
@@ -284,7 +274,7 @@ function renderSponsors(pubs) {
   // Populate search filter publishers
   const pubSelect = $('filter-publisher');
   if (pubSelect) {
-    pubSelect.innerHTML = '<option value="">— الناشر —</option>';
+    pubSelect.innerHTML = '<option value="">الناشر</option>';
     pubs.forEach(p => {
       pubSelect.innerHTML += `<option value="${esc(p.id)}">${esc(p.name)}</option>`;
     });
@@ -518,7 +508,7 @@ function updateFavUI() {
   const body = $('fav-body');
   if (!body) return;
   body.innerHTML = '';
-  if (!c) { body.innerHTML = '<div class="fav-empty"><i class="fa-solid fa-heart-crack" style="font-size:3rem;opacity:.3"></i><br><span>لا توجد كتب في المفضلة</span></div>'; return; }
+  if (!c) { body.innerHTML = '<div class="fav-empty"><i class="fa-regular fa-heart" style="font-size:3rem;opacity:.3;color:var(--clr-gold)"></i><br><span>لا توجد كتب في المفضلة</span></div>'; return; }
   S.favs.forEach(f => {
     const d = document.createElement('div'); d.className = 'fav-item';
     d.innerHTML = `<div class="fav-item-cover">${f.cover?`<img src="${esc(f.cover)}"/>`:'<div style="display:flex;align-items:center;justify-content:center;height:100%"><i class="fa-solid fa-book"></i></div>'}</div>
@@ -539,7 +529,10 @@ function addToCart(book) {
   const maxStock = book.stockQuantity ?? Infinity;
   const ex = S.cart.find(i=>i.id===book.id);
   const currentQty = ex ? ex.qty : 0;
-  if(currentQty >= maxStock) { toast(`نفذ المخزون: متاح ${maxStock} فقط`,'warn'); return; }
+  if(currentQty >= maxStock) {
+    if (maxStock === 0) toast('عذراً، هذا الكتاب غير متوفر حالياً', 'error');
+    return;
+  }
   if (ex) ex.qty+=1; else S.cart.push({id:book.id,title:book.title,price:book.price,cover:book.cover,stockQuantity:book.stockQuantity,qty:1});
   persist('nip_cart',S.cart); updateCartUI();
 }
