@@ -263,6 +263,15 @@ html,body{
 }
 .forgot-link:hover{color:var(--gold)}
 
+/* Error Message */
+.auth-error{
+  color:var(--danger);font-size:.85rem;
+  text-align:center;min-height:20px;
+  opacity:0;transition:opacity .3s var(--ease);
+  margin-top:-8px;margin-bottom:8px;
+}
+.auth-error.visible{opacity:1}
+
 /* ── Gold Button ── */
 .btn-gold{
   position:relative;width:100%;padding:16px 20px;

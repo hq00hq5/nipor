@@ -12,9 +12,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <script type="module" crossorigin src="/assets/main-CXv-pfN6.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-jOxQnEC1.css">
+  <script type="module" crossorigin src="/assets/main-Bu4I3A7e.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/firebase-ByxpQybF.js">
+  <link rel="stylesheet" crossorigin href="/assets/main-CqeZGneg.css">
 </head>
 <body>
 
@@ -74,10 +74,12 @@
         <div class="field-highlight"></div>
       </div>
       <a href="#" class="forgot-link" id="forgot-link">نسيت كلمة المرور؟</a>
+      <div id="email-error" class="auth-error"></div>
       <button class="btn-gold" type="submit" id="btn-login">
         <span class="btn-gold-text">تسجيل الدخول</span>
         <span class="btn-gold-shine"></span>
-        <i class="fa-solid fa-arrow-left btn-gold-arrow"></i>
+        <i class="fa-solid fa-arrow-left btn-gold-arrow" id="btn-login-icon"></i>
+        <i class="fa-solid fa-circle-notch fa-spin btn-gold-spinner" id="btn-login-spinner" style="display:none;"></i>
       </button>
     </form>
 

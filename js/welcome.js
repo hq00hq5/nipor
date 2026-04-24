@@ -5,6 +5,9 @@
 
 const $ = id => document.getElementById(id);
 
+import { auth } from '../firebase.js';
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
 // ══════════════════════════════════════
 //  CUNEIFORM CANVAS BACKGROUND
 // ══════════════════════════════════════
@@ -147,13 +150,73 @@ function showSuccess(title, desc) {
 }
 
 // ══════════════════════════════════════
-//  FORM HANDLERS (Mock Auth Bypass)
+//  FORM HANDLERS (Firebase Auth)
 // ══════════════════════════════════════
 
+function setBtnLoading(isLoading) {
+  const text = $('btn-login').querySelector('.btn-gold-text');
+  const icon = $('btn-login-icon');
+  const spinner = $('btn-login-spinner');
+  if (isLoading) {
+    text.textContent = 'جاري التحقق...';
+    icon.style.display = 'none';
+    spinner.style.display = 'inline-block';
+    $('btn-login').disabled = true;
+  } else {
+    text.textContent = 'تسجيل الدخول';
+    icon.style.display = 'inline-block';
+    spinner.style.display = 'none';
+    $('btn-login').disabled = false;
+  }
+}
+
+function showError(msg) {
+  const errDiv = $('email-error');
+  errDiv.textContent = msg;
+  errDiv.classList.add('visible');
+}
+
+function hideError() {
+  $('email-error').classList.remove('visible');
+}
+
 // Email login
-$('form-email').addEventListener('submit', function(e) {
+$('form-email').addEventListener('submit', async function(e) {
   e.preventDefault();
-  showSuccess('تم تسجيل الدخول', 'جاري تحميل مكتبتك...');
+  hideError();
+  
+  const email = $('input-email').value.trim();
+  const password = $('input-pass').value;
+
+  if (!email || !password) {
+    showError('يرجى إدخال البريد الإلكتروني وكلمة المرور');
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showError('صيغة البريد الإلكتروني غير صحيحة');
+    return;
+  }
+
+  setBtnLoading(true);
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    showSuccess('تم تسجيل الدخول', 'جاري تحميل مكتبتك...');
+  } catch (error) {
+    setBtnLoading(false);
+    console.error('Login error:', error);
+    let errorMsg = 'حدث خطأ أثناء تسجيل الدخول';
+    if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+      errorMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+    } else if (error.code === 'auth/wrong-password') {
+      errorMsg = 'كلمة المرور غير صحيحة';
+    } else if (error.code === 'auth/too-many-requests') {
+      errorMsg = 'محاولات كثيرة جداً. حاول مرة أخرى لاحقاً.';
+    }
+    showError(errorMsg);
+  }
 });
 
 // Phone OTP
