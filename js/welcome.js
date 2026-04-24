@@ -142,7 +142,7 @@ function showSuccess(title, desc) {
   overlay.classList.add('active');
   // Force redirect — no Firebase, no try/catch
   setTimeout(function() {
-    window.location.href = 'index.html';
+    window.location.href = 'library.html';
   }, 1200);
 }
 

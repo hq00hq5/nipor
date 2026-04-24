@@ -1,19 +1,18 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // Serve both index.html, welcome.html, and admin.html as entries
   root: '.',
   build: {
     rollupOptions: {
       input: {
-        main:    'index.html',
-        welcome: 'welcome.html',
-        admin:   'admin.html',
+        main:    'index.html',      // Login page (entry point)
+        library: 'library.html',    // Library / Dashboard
+        admin:   'admin.html',      // Admin panel
       },
     },
   },
   server: {
     port: 3000,
-    open: '/welcome.html',
+    open: '/',  // Opens index.html (the login page) by default
   },
 });

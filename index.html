@@ -3,295 +3,126 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
-  <meta name="description" content="نيپور — الوسيط الرقمي الفاخر. اكتشف آلاف الكتب من أبرز دور النشر."/>
+  <meta name="description" content="نيپور — الوسيط الرقمي الفاخر. سجّل دخولك واستمتع بتجربة فريدة."/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="theme-color" content="#0A0A0A"/>
-  <title>نيپور | المكتبة الرقمية</title>
+  <meta name="theme-color" content="#060608"/>
+  <title>نيپور | مرحبا بك</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/welcome.css"/>
 </head>
 <body>
 
-<!-- TOAST -->
-<div id="toastContainer" class="toast-container" role="alert"></div>
+<!-- ═══ ANIMATED BACKGROUND LAYERS ═══ -->
+<div class="bg-base"></div>
+<canvas id="cuneiform-canvas"></canvas>
+<div class="bg-glow bg-glow--top"></div>
+<div class="bg-glow bg-glow--bottom"></div>
+<div class="bg-noise"></div>
+<div class="bg-vignette"></div>
 
-<!-- ═══ AUTH MODAL ═══ -->
-<div class="auth-overlay" id="auth-overlay">
-  <div class="auth-box">
-    <button class="auth-close" id="auth-close"><i class="fa-solid fa-xmark"></i></button>
-    <div class="auth-icon">&#x12000;</div>
-    <h2 class="auth-title">مرحبا بك في نيپور</h2>
-    <p class="auth-desc">سجل دخولك للوصول إلى محفظتك والمزيد</p>
-    <input class="auth-input" id="auth-email" type="email" placeholder="البريد الإلكتروني"/>
-    <button class="btn btn-primary" style="width:100%" id="auth-email-btn"><i class="fa-solid fa-arrow-left"></i> تسجيل بالبريد</button>
-    <div class="auth-or">أو</div>
-    <input class="auth-input" id="auth-phone" type="tel" placeholder="رقم الهاتف (OTP)"/>
-    <button class="btn btn-gold" style="width:100%" id="auth-phone-btn"><i class="fa-solid fa-mobile-screen"></i> تسجيل بالهاتف</button>
+<!-- ═══ FLOATING CUNEIFORM CHARACTERS ═══ -->
+<div class="floating-glyphs" id="floating-glyphs" aria-hidden="true"></div>
+
+<!-- ═══ MAIN CONTAINER ═══ -->
+<main class="login-main" id="login-main">
+
+  <!-- ── Brand Header ── -->
+  <header class="brand" id="brand">
+    <div class="brand-lamassu">
+      <svg class="lamassu-svg" viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="60" r="56" stroke="url(#gold-ring)" stroke-width="1.5" opacity="0.4"/>
+        <circle cx="60" cy="60" r="48" stroke="url(#gold-ring)" stroke-width="0.8" opacity="0.2"/>
+        <defs><linearGradient id="gold-ring" x1="0" y1="0" x2="120" y2="120"><stop stop-color="#D4AF37"/><stop offset="1" stop-color="#E8C547"/></linearGradient></defs>
+      </svg>
+      <span class="lamassu-glyph">&#x12000;</span>
+    </div>
+    <h1 class="brand-name">نيپور</h1>
+    <p class="brand-tagline">الوسيط الرقمي الفاخر</p>
+    <div class="brand-line"></div>
+  </header>
+
+  <!-- ── Glassmorphic Auth Card ── -->
+  <section class="glass-card" id="glass-card">
+    <div class="glass-card-glow"></div>
+
+    <!-- Tab Switcher: Email / Phone -->
+    <div class="auth-tabs" id="auth-tabs">
+      <button class="auth-tab active" data-tab="email" id="tab-email">
+        <i class="fa-solid fa-envelope"></i> البريد الإلكتروني
+      </button>
+      <button class="auth-tab" data-tab="phone" id="tab-phone">
+        <i class="fa-solid fa-mobile-screen"></i> رقم الهاتف
+      </button>
+      <div class="auth-tab-indicator" id="tab-indicator"></div>
+    </div>
+
+    <!-- Email Form -->
+    <form class="auth-form" id="form-email" autocomplete="off">
+      <div class="field">
+        <input class="field-input" id="input-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email"/>
+        <div class="field-highlight"></div>
+      </div>
+      <div class="field">
+        <input class="field-input" id="input-pass" type="password" placeholder="كلمة المرور"/>
+        <button class="field-toggle" id="pass-toggle" type="button"><i class="fa-solid fa-eye"></i></button>
+        <div class="field-highlight"></div>
+      </div>
+      <a href="#" class="forgot-link" id="forgot-link">نسيت كلمة المرور؟</a>
+      <button class="btn-gold" type="submit" id="btn-login">
+        <span class="btn-gold-text">تسجيل الدخول</span>
+        <span class="btn-gold-shine"></span>
+        <i class="fa-solid fa-arrow-left btn-gold-arrow"></i>
+      </button>
+    </form>
+
+    <!-- Phone Form -->
+    <form class="auth-form auth-form--hidden" id="form-phone" autocomplete="off">
+      <div class="field">
+        <input class="field-input" id="input-phone" type="tel" placeholder="رقم الهاتف" autocomplete="tel"/>
+        <div class="field-highlight"></div>
+      </div>
+      <button class="btn-gold" type="submit" id="btn-otp">
+        <span class="btn-gold-text">إرسال رمز التحقق</span>
+        <span class="btn-gold-shine"></span>
+        <i class="fa-solid fa-paper-plane btn-gold-arrow"></i>
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="divider"><span>أو</span></div>
+
+    <!-- Register & Guest -->
+    <button class="btn-outline" id="btn-register">
+      <i class="fa-solid fa-user-plus"></i>
+      <span>إنشاء حساب جديد</span>
+    </button>
+    <button class="btn-ghost" id="btn-guest">
+      <i class="fa-regular fa-eye"></i>
+      <span>تصفح كزائر</span>
+    </button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="login-footer" id="login-footer">
+    <span>&copy; 2025 نيپور — جميع الحقوق محفوظة</span>
+  </footer>
+</main>
+
+<!-- ═══ GOLD SUCCESS MODAL ═══ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-card" id="modal-card">
+    <div class="modal-particles" id="modal-particles"></div>
+    <div class="modal-icon"><i class="fa-solid fa-check"></i></div>
+    <h2 class="modal-title" id="modal-title">مرحبا بك في نيپور</h2>
+    <p class="modal-desc" id="modal-desc">جاري تحميل مكتبتك...</p>
+    <div class="modal-bar"><div class="modal-bar-fill"></div></div>
   </div>
 </div>
 
-<!-- ═══ FAVORITES PANEL ═══ -->
-<div class="fav-overlay" id="fav-overlay"></div>
-<aside class="fav-panel" id="fav-panel">
-  <div class="fav-header">
-    <div class="fav-header-title"><i class="fa-solid fa-heart" style="color:var(--clr-gold)"></i> المفضلة <span id="fav-count-badge" class="text-xs" style="color:var(--txt-muted)">(0)</span></div>
-    <button class="fav-close" id="fav-close"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div class="fav-body" id="fav-body">
-    <div class="fav-empty" id="fav-empty"><i class="fa-regular fa-heart" style="font-size:3rem;opacity:.3;color:var(--clr-gold)"></i><br><span>لا توجد كتب في المفضلة</span></div>
-  </div>
-</aside>
-
-<!-- ═══ BOOK DETAIL PANEL ═══ -->
-<div class="detail-overlay" id="detail-overlay"></div>
-<div class="detail-panel" id="detail-panel">
-  <div class="detail-header">
-    <span style="font-weight:700">تفاصيل الكتاب</span>
-    <button class="close-btn" id="detail-close"><i class="fa-solid fa-xmark"></i></button>
-  </div>
-  <div id="detail-body"></div>
-</div>
-
-<!-- ═══ ZOOM OVERLAY ═══ -->
-<div class="zoom-overlay" id="zoom-overlay"><img id="zoom-img" src="" alt=""/></div>
-
-
-<!-- ══════════════════════════════════════════════════════════
-     APP SHELL — 4 VIEW SECTIONS
-     ══════════════════════════════════════════════════════════ -->
-<div class="app-shell" id="app-shell">
-
-  <!-- ═══ VIEW: HOME (الرئيسية) ═══ -->
-  <section class="view view--active" id="view-home">
-    <!-- Centered Logo Header -->
-    <header class="view-header">
-      <div class="view-header-inner view-header-inner--centered">
-        <div class="header-brand header-brand--centered">
-          <div class="logo-icon logo-icon--hero">&#x12000;</div>
-          <span class="logo-title text-gold">نيپور</span>
-        </div>
-        <div class="header-actions">
-          <button class="action-icon" id="fav-toggle" title="المفضلة"><i class="fa-regular fa-heart"></i><span class="badge-count hidden" id="fav-nav-badge">0</span></button>
-        </div>
-      </div>
-    </header>
-
-    <div class="view-body">
-      <!-- Hero Banner -->
-      <div class="home-hero">
-        <div class="home-hero-content">
-          <div class="hero-cuneiform">&#x12000;</div>
-          <h1 class="hero-title"><span class="text-gold">نيپور</span></h1>
-          <p class="hero-subtitle">آلاف العناوين من أبرز دور النشر العربية والعالمية، بتصميم فاخر ملهم من حضارة سومر.</p>
-        </div>
-      </div>
-
-      <!-- Sponsored Publishers -->
-      <div class="home-section">
-        <div class="section-head"><h2 class="section-head-title"><i class="fa-solid fa-building-columns"></i> دور نشر مميزة</h2></div>
-        <div class="sponsored-row" id="sponsored-row"><!-- live --></div>
-      </div>
-
-      <!-- New Arrivals -->
-      <div class="home-section">
-        <div class="section-head"><h2 class="section-head-title"><i class="fa-solid fa-sparkles"></i> أحدث الإصدارات</h2><span class="row-see-all" id="see-all-new">عرض الكل <i class="fa-solid fa-arrow-left"></i></span></div>
-        <div class="books-scroll" id="books-new">
-          <div class="skeleton book-skel"></div>
-          <div class="skeleton book-skel"></div>
-          <div class="skeleton book-skel"></div>
-        </div>
-      </div>
-
-      <!-- Nippur Recommendations -->
-      <div class="home-section">
-        <div class="section-head"><h2 class="section-head-title"><i class="fa-solid fa-crown"></i> توصيات نيپور</h2><span class="row-see-all" id="see-all-rec">عرض الكل <i class="fa-solid fa-arrow-left"></i></span></div>
-        <div class="books-scroll" id="books-rec"></div>
-      </div>
-
-      <!-- Browse Tabs: Publishers & Categories -->
-      <div class="home-section">
-        <div class="tab-header">
-          <h2 class="section-head-title text-gold"><i class="fa-solid fa-compass"></i> تصفح المكتبة</h2>
-          <div class="tab-switcher" role="tablist">
-            <div class="tab-indicator" id="tab-indicator"></div>
-            <button class="tab-btn active" data-panel="publishers" id="tab-publishers"><i class="fa-solid fa-building-columns"></i> دور النشر</button>
-            <button class="tab-btn" data-panel="categories" id="tab-categories"><i class="fa-solid fa-tags"></i> التصنيفات</button>
-          </div>
-        </div>
-        <div class="tab-panels" id="tab-panels">
-          <div class="tab-panel active" id="panel-publishers"><div class="pub-grid" id="pub-grid">
-            <div class="skeleton" style="aspect-ratio:2/3;border-radius:var(--r-lg)"></div>
-            <div class="skeleton" style="aspect-ratio:2/3;border-radius:var(--r-lg)"></div>
-            <div class="skeleton" style="aspect-ratio:2/3;border-radius:var(--r-lg)"></div>
-          </div></div>
-          <div class="tab-panel" id="panel-categories"><div class="cat-grid" id="cat-grid">
-            <div class="skeleton" style="aspect-ratio:1;border-radius:var(--r-lg)"></div>
-            <div class="skeleton" style="aspect-ratio:1;border-radius:var(--r-lg)"></div>
-          </div></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ VIEW: SEARCH (البحث) ═══ -->
-  <section class="view" id="view-search">
-    <div class="view-body" style="padding-top: var(--sp-lg);">
-      <!-- Search Bar -->
-      <div class="search-section">
-        <div class="search-bar-wrap">
-          <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
-          <input type="search" id="main-search" class="search-bar-input" placeholder="ابحث عن كتاب، مؤلف أو ناشر..." autocomplete="off"/>
-          <button class="search-filter-btn" id="search-filter-toggle"><i class="fa-solid fa-sliders"></i></button>
-        </div>
-        <!-- Funnel Filters -->
-        <div class="filter-panel" id="filter-panel">
-          <div class="filter-row">
-            <select class="filter-select" id="filter-price"><option value="">السعر</option><option value="low">الأقل سعرا</option><option value="high">الأعلى سعرا</option></select>
-            <select class="filter-select" id="filter-category"><option value="">التصنيف</option></select>
-            <select class="filter-select" id="filter-publisher"><option value="">الناشر</option></select>
-          </div>
-          <div class="filter-pills" id="smart-filters">
-            <button class="filter-pill active" data-filter="all">الكل</button>
-            <button class="filter-pill" data-filter="bestseller">الأكثر مبيعا</button>
-            <button class="filter-pill" data-filter="new">إصدارات جديدة</button>
-            <button class="filter-pill" data-filter="offers">عروض خاصة</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Back Nav for drill-down -->
-      <button class="back-nav" id="back-nav"><i class="fa-solid fa-arrow-right"></i> <span id="back-label">العودة</span></button>
-
-      <!-- Search Results -->
-      <div class="search-results" id="search-results">
-        <div class="search-empty" id="search-empty">
-          <div class="search-empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
-          <div class="search-empty-title">ابحث في المكتبة</div>
-          <div class="search-empty-desc">اكتب اسم الكتاب أو المؤلف أو الناشر</div>
-        </div>
-      </div>
-
-      <!-- Filtered Results (drill-down) -->
-      <div id="row-filtered" class="hidden">
-        <div class="section-head"><h3 class="section-head-title" id="filtered-title"><i class="fa-solid fa-filter"></i> النتائج</h3></div>
-        <div id="books-filtered" class="books-grid"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="view" id="view-orders">
-    <div class="view-body" style="padding-top: var(--sp-lg);">
-      <!-- Cart Header Counter -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--sp-md);">
-        <h2 class="section-head-title text-gold"><i class="fa-solid fa-bag-shopping"></i> حقيبتي</h2>
-        <span class="orders-count" id="orders-count">0 عنصر</span>
-      </div>
-      <!-- Cart Items -->
-      <div class="orders-list" id="orders-list">
-        <!-- Populated via JS -->
-      </div>
-
-      <!-- Order Summary -->
-      <div class="order-summary" id="order-summary">
-        <div class="order-summary-row">
-          <span>المجموع الفرعي</span>
-          <span id="order-subtotal" class="order-val">0 د.ع</span>
-        </div>
-        <div class="order-summary-row">
-          <span>التوصيل</span>
-          <span class="order-val" style="color:var(--clr-success)">مجاني</span>
-        </div>
-        <div class="order-summary-row order-total-row">
-          <span>المجموع الكلي</span>
-          <span id="order-total" class="order-total-val">0 د.ع</span>
-        </div>
-        <button class="btn btn-gold btn-lg order-checkout-btn" id="cart-checkout"><i class="fa-solid fa-credit-card"></i> إتمام الطلب</button>
-      </div>
-
-
-      <!-- Empty Cart State -->
-      <div class="orders-empty" id="orders-empty">
-        <div class="orders-empty-icon"><i class="fa-solid fa-bag-shopping"></i></div>
-        <div class="orders-empty-title">سلة المشتريات فارغة</div>
-        <div class="orders-empty-desc">تصفح المكتبة وأضف كتبك المفضلة</div>
-        <button class="btn btn-gold" id="go-browse"><i class="fa-solid fa-compass"></i> استكشف المكتبة</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══ VIEW: ACCOUNT (حسابي) ═══ -->
-  <section class="view" id="view-account">
-    <div class="view-body" style="padding-top: var(--sp-lg);">
-      <h2 class="section-head-title text-gold" style="margin-bottom:var(--sp-lg)"><i class="fa-solid fa-user"></i> حسابي</h2>
-      
-      <!-- Account Options (Glassmorphism + Gold Border applied via CSS class) -->
-      <div class="premium-card">
-        <h3 class="premium-card-title"><i class="fa-solid fa-id-badge"></i> المعلومات الشخصية</h3>
-        <div class="account-options">
-          <button class="account-option-btn" id="btn-auth-open"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
-          <div class="account-profile-info hidden" id="account-profile-info">
-            <div class="profile-name">اسم المستخدم</div>
-            <div class="profile-email">email@example.com</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="premium-card" id="admin-card">
-        <a href="admin.html" class="btn btn-gold" style="width:100%"><i class="fa-solid fa-gauge-high"></i> لوحة الإدارة</a>
-      </div>
-
-      <div class="premium-card">
-        <h3 class="premium-card-title"><i class="fa-solid fa-palette"></i> المظهر</h3>
-        <div class="theme-switch" id="theme-switch">
-          <button class="theme-btn active" data-theme="dark"><i class="fa-solid fa-moon"></i> داكن</button>
-          <button class="theme-btn" data-theme="light"><i class="fa-solid fa-sun"></i> فاتح</button>
-        </div>
-      </div>
-
-      <div class="premium-card hidden" id="logout-card">
-        <button class="btn btn-ghost" style="width:100%; color:var(--clr-danger); border-color:rgba(225,29,72,0.3)" id="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج</button>
-      </div>
-
-      <!-- App Info -->
-      <div class="app-info">
-        <div class="app-info-logo">&#x12000;</div>
-        <div class="app-info-name text-gold">نيپور</div>
-        <div class="app-info-desc">الوسيط الرقمي الفاخر — نربط بين دور النشر والقراء بتجربة استثنائية.</div>
-        <div class="app-info-copy">&copy; 2025 نيپور — جميع الحقوق محفوظة</div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════
-     BOTTOM NAVIGATION BAR
-     ══════════════════════════════════════════════════════════ -->
-<nav class="bottom-nav" id="bottom-nav">
-  <!-- Sliding Pill Indicator -->
-  <div class="nav-pill" id="nav-pill"></div>
-  <button class="bottom-nav-item active" data-view="home" id="nav-home">
-    <i class="fa-solid fa-house bottom-nav-icon"></i>
-    <span class="bottom-nav-label">الرئيسية</span>
-  </button>
-  <button class="bottom-nav-item" data-view="search" id="nav-search">
-    <i class="fa-solid fa-magnifying-glass bottom-nav-icon"></i>
-    <span class="bottom-nav-label">البحث</span>
-  </button>
-  <button class="bottom-nav-item" data-view="orders" id="nav-orders">
-    <i class="fa-solid fa-bag-shopping bottom-nav-icon"></i>
-    <span class="bottom-nav-label">حقيبتي</span>
-    <span class="bottom-nav-badge hidden" id="cart-nav-badge">0</span>
-  </button>
-  <button class="bottom-nav-item" data-view="account" id="nav-account">
-    <i class="fa-solid fa-user bottom-nav-icon"></i>
-    <span class="bottom-nav-label">حسابي</span>
-  </button>
-</nav>
-
-<script type="module" src="js/app.js"></script>
+<script type="module" src="js/welcome.js"></script>
 </body>
 </html>
