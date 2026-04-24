@@ -19,20 +19,6 @@
 <!-- TOAST -->
 <div id="toastContainer" class="toast-container" role="alert"></div>
 
-<!-- ═══ AUTH MODAL ═══ -->
-<div class="auth-overlay" id="auth-overlay">
-  <div class="auth-box">
-    <button class="auth-close" id="auth-close"><i class="fa-solid fa-xmark"></i></button>
-    <div class="auth-icon">&#x12000;</div>
-    <h2 class="auth-title">مرحبا بك في نيپور</h2>
-    <p class="auth-desc">سجل دخولك للوصول إلى محفظتك والمزيد</p>
-    <input class="auth-input" id="auth-email" type="email" placeholder="البريد الإلكتروني"/>
-    <button class="btn btn-primary" style="width:100%" id="auth-email-btn"><i class="fa-solid fa-arrow-left"></i> تسجيل بالبريد</button>
-    <div class="auth-or">أو</div>
-    <input class="auth-input" id="auth-phone" type="tel" placeholder="رقم الهاتف (OTP)"/>
-    <button class="btn btn-gold" style="width:100%" id="auth-phone-btn"><i class="fa-solid fa-mobile-screen"></i> تسجيل بالهاتف</button>
-  </div>
-</div>
 
 <!-- ═══ FAVORITES PANEL ═══ -->
 <div class="fav-overlay" id="fav-overlay"></div>
@@ -75,7 +61,7 @@
           <span class="logo-title text-gold">نيپور</span>
         </div>
         <div class="header-actions">
-          <button class="action-icon" id="fav-toggle" title="المفضلة"><i class="fa-regular fa-heart"></i><span class="badge-count hidden" id="fav-nav-badge">0</span></button>
+          <!-- Favorites moved to My Account -->
         </div>
       </div>
     </header>
@@ -232,12 +218,24 @@
       <div class="premium-card">
         <h3 class="premium-card-title"><i class="fa-solid fa-id-badge"></i> المعلومات الشخصية</h3>
         <div class="account-options">
-          <button class="account-option-btn" id="btn-auth-open"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</button>
+          <a href="index.html" class="account-option-btn" style="text-decoration:none" id="btn-auth-open"><i class="fa-solid fa-right-to-bracket"></i> يرجى تسجيل الدخول لعرض حسابك</a>
           <div class="account-profile-info hidden" id="account-profile-info">
-            <div class="profile-name">اسم المستخدم</div>
-            <div class="profile-email">email@example.com</div>
+            <div class="profile-pic-container" style="text-align: center; margin-bottom: 16px;">
+              <label for="profile-pic-upload" style="cursor: pointer; position: relative; display: inline-block;">
+                <img src="https://ui-avatars.com/api/?name=Nippur&background=D4AF37&color=0A0A0A" id="profile-pic" alt="Profile" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--gold); object-fit: cover;">
+                <div style="position: absolute; bottom: 0; right: 0; background: var(--bg-card); border-radius: 50%; padding: 4px; border: 1px solid var(--gold); color: var(--gold); font-size: 0.8rem;"><i class="fa-solid fa-camera"></i></div>
+              </label>
+              <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;">
+            </div>
+            <div class="profile-name" id="profile-name" style="text-align: center; font-size: 1.2rem; font-weight: 700; color: var(--gold);">اسم المستخدم</div>
+            <div class="profile-email" id="profile-email" style="text-align: center; color: var(--txt2);">email@example.com</div>
           </div>
         </div>
+      </div>
+
+      <div class="premium-card hidden" id="account-favorites">
+        <h3 class="premium-card-title"><i class="fa-solid fa-heart"></i> المفضلات</h3>
+        <div id="fav-body" class="fav-body" style="padding: 0; margin-top: 16px; display: flex; flex-direction: column; gap: 12px;"></div>
       </div>
 
       <div class="premium-card" id="admin-card">
@@ -253,7 +251,7 @@
       </div>
 
       <div class="premium-card hidden" id="logout-card">
-        <button class="btn btn-ghost" style="width:100%; color:var(--clr-danger); border-color:rgba(225,29,72,0.3)" id="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج</button>
+        <button class="btn btn-ghost" style="width:100%; color:var(--clr-danger); border-color:rgba(225,29,72,0.3)" id="btn-logout" onclick="window.location.href='index.html'"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج</button>
       </div>
 
       <!-- App Info -->

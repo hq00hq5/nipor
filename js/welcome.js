@@ -6,7 +6,7 @@
 const $ = id => document.getElementById(id);
 
 import { auth } from '../firebase.js';
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { signInWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 // ══════════════════════════════════════
 //  CUNEIFORM CANVAS BACKGROUND
@@ -163,7 +163,7 @@ function setBtnLoading(isLoading) {
     spinner.style.display = 'inline-block';
     $('btn-login').disabled = true;
   } else {
-    text.textContent = 'تسجيل الدخول';
+    text.textContent = 'تسجيل بالبريد';
     icon.style.display = 'inline-block';
     spinner.style.display = 'none';
     $('btn-login').disabled = false;
@@ -219,15 +219,120 @@ $('form-email').addEventListener('submit', async function(e) {
   }
 });
 
-// Phone OTP
-$('form-phone').addEventListener('submit', function(e) {
+// ══════════════════════════════════════
+//  PHONE OTP (Firebase Auth)
+// ══════════════════════════════════════
+
+function setPhoneLoading(isLoading, btnId) {
+  const btn = $(btnId);
+  if (!btn) return;
+  const text = btn.querySelector('.btn-gold-text');
+  const icon = $(btnId + '-icon');
+  const spinner = $(btnId + '-spinner');
+  if (isLoading) {
+    if (btnId === 'btn-otp-send') text.textContent = 'جاري الإرسال...';
+    else text.textContent = 'جاري التحقق...';
+    icon.style.display = 'none';
+    spinner.style.display = 'inline-block';
+    btn.disabled = true;
+  } else {
+    if (btnId === 'btn-otp-send') text.textContent = 'إرسال رمز التحقق';
+    else text.textContent = 'تأكيد الدخول';
+    icon.style.display = 'inline-block';
+    spinner.style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+function showPhoneError(msg) {
+  const errDiv = $('phone-error');
+  errDiv.textContent = msg;
+  errDiv.classList.add('visible');
+}
+
+function hidePhoneError() {
+  $('phone-error').classList.remove('visible');
+}
+
+let confirmationResult = null;
+
+function initRecaptcha() {
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+      'size': 'invisible',
+      'callback': (response) => {
+        // reCAPTCHA solved
+      }
+    });
+  }
+}
+
+$('form-phone').addEventListener('submit', async function(e) {
   e.preventDefault();
-  showSuccess('تم إرسال الرمز', 'جاري التحقق...');
+  hidePhoneError();
+  
+  if ($('phone-step-1').style.display !== 'none') {
+    // Send OTP
+    const phone = $('input-phone').value.trim();
+    if (!phone) {
+      showPhoneError('يرجى إدخال رقم الهاتف');
+      return;
+    }
+    
+    setPhoneLoading(true, 'btn-otp-send');
+    initRecaptcha();
+    
+    try {
+      confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+      $('phone-step-1').style.display = 'none';
+      $('phone-step-2').style.display = 'block';
+      setPhoneLoading(false, 'btn-otp-send');
+    } catch (error) {
+      setPhoneLoading(false, 'btn-otp-send');
+      console.error('SMS error:', error);
+      let errorMsg = 'تعذر إرسال الرمز. يرجى المحاولة مرة أخرى.';
+      if (error.code === 'auth/invalid-phone-number') {
+        errorMsg = 'رقم الهاتف غير صحيح (تأكد من إضافة رمز الدولة مثل +964)';
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMsg = 'محاولات كثيرة جداً. حاول مرة أخرى لاحقاً.';
+      }
+      showPhoneError(errorMsg);
+    }
+  } else {
+    // Verify OTP
+    const code = $('input-otp').value.trim();
+    if (!code) {
+      showPhoneError('يرجى إدخال رمز التحقق');
+      return;
+    }
+    
+    setPhoneLoading(true, 'btn-otp-verify');
+    
+    try {
+      await confirmationResult.confirm(code);
+      showSuccess('تم تسجيل الدخول بنجاح', 'جاري تحميل مكتبتك...');
+    } catch (error) {
+      setPhoneLoading(false, 'btn-otp-verify');
+      console.error('OTP error:', error);
+      let errorMsg = 'رمز التحقق خطأ';
+      if (error.code === 'auth/invalid-verification-code') {
+        errorMsg = 'الرمز غير صحيح، يرجى التأكد والمحاولة مجدداً';
+      }
+      showPhoneError(errorMsg);
+    }
+  }
+});
+
+$('btn-phone-back').addEventListener('click', function() {
+  hidePhoneError();
+  $('phone-step-2').style.display = 'none';
+  $('phone-step-1').style.display = 'block';
+  $('input-otp').value = '';
 });
 
 // Register
 $('btn-register').addEventListener('click', function() {
-  showSuccess('تم إنشاء الحساب بنجاح', 'مرحبا بك في عائلة نيپور');
+  window.location.href = 'register.html';
 });
 
 // Guest

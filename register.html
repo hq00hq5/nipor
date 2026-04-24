@@ -49,66 +49,41 @@
   <section class="glass-card" id="glass-card">
     <div class="glass-card-glow"></div>
 
-    <!-- Tab Switcher: Email / Phone -->
-    <div class="auth-tabs" id="auth-tabs">
-      <button class="auth-tab active" data-tab="email" id="tab-email">
-        <i class="fa-solid fa-envelope"></i> البريد الإلكتروني
-      </button>
-      <button class="auth-tab" data-tab="phone" id="tab-phone">
-        <i class="fa-solid fa-mobile-screen"></i> رقم الهاتف
-      </button>
-      <div class="auth-tab-indicator" id="tab-indicator"></div>
-    </div>
+    <h2 style="color:var(--gold);text-align:center;margin-bottom:24px;font-size:1.4rem;">إنشاء حساب جديد</h2>
 
-    <!-- Email Form -->
-    <form class="auth-form" id="form-email" autocomplete="off">
+    <!-- Register Form -->
+    <form class="auth-form" id="form-register" autocomplete="off">
       <div class="field">
-        <div class="field-icon"><i class="fa-solid fa-at"></i></div>
-        <input class="field-input" id="input-email" type="email" placeholder=" " autocomplete="email"/>
-        <label class="field-label" for="input-email">البريد الإلكتروني</label>
-        <div class="field-highlight"></div>
+        <input class="field-input" id="input-name" type="text" placeholder="الاسم الكامل" autocomplete="name"/>
       </div>
       <div class="field">
-        <div class="field-icon"><i class="fa-solid fa-lock"></i></div>
-        <input class="field-input" id="input-pass" type="password" placeholder=" "/>
-        <label class="field-label" for="input-pass">كلمة المرور</label>
+        <input class="field-input" id="input-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email"/>
+      </div>
+      <div class="field">
+        <input class="field-input" id="input-pass" type="password" placeholder="كلمة المرور"/>
         <button class="field-toggle" id="pass-toggle" type="button"><i class="fa-solid fa-eye"></i></button>
-        <div class="field-highlight"></div>
       </div>
-      <a href="#" class="forgot-link" id="forgot-link">نسيت كلمة المرور؟</a>
-      <button class="btn-gold" type="submit" id="btn-login">
-        <span class="btn-gold-text">تسجيل الدخول</span>
-        <span class="btn-gold-shine"></span>
-        <i class="fa-solid fa-arrow-left btn-gold-arrow"></i>
-      </button>
-    </form>
-
-    <!-- Phone Form -->
-    <form class="auth-form auth-form--hidden" id="form-phone" autocomplete="off">
       <div class="field">
-        <div class="field-icon"><i class="fa-solid fa-phone"></i></div>
-        <input class="field-input" id="input-phone" type="tel" placeholder=" " autocomplete="tel"/>
-        <label class="field-label" for="input-phone">رقم الهاتف</label>
-        <div class="field-highlight"></div>
+        <input class="field-input" id="input-pass-conf" type="password" placeholder="تأكيد كلمة المرور"/>
+        <button class="field-toggle" id="pass-conf-toggle" type="button"><i class="fa-solid fa-eye"></i></button>
       </div>
-      <button class="btn-gold" type="submit" id="btn-otp">
-        <span class="btn-gold-text">إرسال رمز التحقق</span>
+      <div id="register-error" class="auth-error"></div>
+      <div id="password-hint" style="color:var(--txt3);font-size:0.8rem;text-align:right;margin-top:-10px;display:none;">يجب أن تحتوي كلمة المرور على 8 أحرف، حرف كبير، رقم، ورمز خاص (@#$).</div>
+      <button class="btn-gold" type="submit" id="btn-register-submit">
+        <span class="btn-gold-text">إنشاء الحساب</span>
         <span class="btn-gold-shine"></span>
-        <i class="fa-solid fa-paper-plane btn-gold-arrow"></i>
+        <i class="fa-solid fa-user-plus btn-gold-arrow" id="btn-register-icon"></i>
+        <i class="fa-solid fa-circle-notch fa-spin btn-gold-spinner" id="btn-register-spinner" style="display:none;"></i>
       </button>
     </form>
 
     <!-- Divider -->
     <div class="divider"><span>أو</span></div>
 
-    <!-- Register & Guest -->
-    <button class="btn-outline" id="btn-register">
-      <i class="fa-solid fa-user-plus"></i>
-      <span>إنشاء حساب جديد</span>
-    </button>
-    <button class="btn-ghost" id="btn-guest">
-      <i class="fa-regular fa-eye"></i>
-      <span>تصفح كزائر</span>
+    <!-- Login Link -->
+    <button class="btn-outline" id="btn-login-link" onclick="window.location.href='index.html'">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      <span>تسجيل الدخول</span>
     </button>
   </section>
 
@@ -124,11 +99,11 @@
     <div class="modal-particles" id="modal-particles"></div>
     <div class="modal-icon"><i class="fa-solid fa-check"></i></div>
     <h2 class="modal-title" id="modal-title">مرحبا بك في نيپور</h2>
-    <p class="modal-desc" id="modal-desc">جاري تحميل مكتبتك...</p>
+    <p class="modal-desc" id="modal-desc">جاري إنشاء حسابك...</p>
     <div class="modal-bar"><div class="modal-bar-fill"></div></div>
   </div>
 </div>
 
-<script type="module" src="js/welcome.js"></script>
+<script type="module" src="js/register.js"></script>
 </body>
 </html>

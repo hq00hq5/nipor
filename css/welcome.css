@@ -237,15 +237,7 @@ html,body{
   border-color:var(--gold);
   background:rgba(255,255,255,0.05);
 }
-.field-highlight{
-  position:absolute;bottom:0;left:50%;
-  width:0;height:2px;
-  background:var(--grad);border-radius:2px;
-  transition:all .35s var(--ease);
-}
-.field-input:focus~.field-highlight{
-  width:100%;left:0;
-}
+
 .field-toggle{
   position:absolute;left:14px;top:50%;transform:translateY(-50%);
   background:none;border:none;color:var(--txt3);

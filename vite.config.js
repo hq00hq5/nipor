@@ -8,6 +8,7 @@ export default defineConfig({
         main:    'index.html',      // Login page (entry point)
         library: 'library.html',    // Library / Dashboard
         admin:   'admin.html',      // Admin panel
+        register:'register.html',   // Registration page
       },
     },
   },

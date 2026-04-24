@@ -20,16 +20,21 @@ const firebaseConfig = {
   measurementId: "G-Q6FTHMVR60"
 };
 
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
+
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const auth    = getAuth(app);
+const storage = getStorage(app);
 
 // ── Diagnostic: log init status ──
 console.log('%c Firebase initialized — project: ' + firebaseConfig.projectId, 'color:#D4AF37;font-weight:700');
 
 export {
-  app, db, auth,
+  app, db, auth, storage,
   // Firestore utilities
   collection, addDoc, getDocs, onSnapshot,
-  doc, deleteDoc, updateDoc, query, orderBy, serverTimestamp, increment
+  doc, deleteDoc, updateDoc, query, orderBy, serverTimestamp, increment,
+  // Storage utilities
+  ref, uploadBytes, getDownloadURL
 };

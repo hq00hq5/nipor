@@ -12,9 +12,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <script type="module" crossorigin src="/assets/main-Bu4I3A7e.js"></script>
+  <script type="module" crossorigin src="/assets/main-DGNnclQA.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/firebase-ByxpQybF.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-CqeZGneg.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-qzOvgg0t.css">
 </head>
 <body>
 
@@ -66,12 +66,10 @@
     <form class="auth-form" id="form-email" autocomplete="off">
       <div class="field">
         <input class="field-input" id="input-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email"/>
-        <div class="field-highlight"></div>
       </div>
       <div class="field">
         <input class="field-input" id="input-pass" type="password" placeholder="كلمة المرور"/>
         <button class="field-toggle" id="pass-toggle" type="button"><i class="fa-solid fa-eye"></i></button>
-        <div class="field-highlight"></div>
       </div>
       <a href="#" class="forgot-link" id="forgot-link">نسيت كلمة المرور؟</a>
       <div id="email-error" class="auth-error"></div>
@@ -85,15 +83,35 @@
 
     <!-- Phone Form -->
     <form class="auth-form auth-form--hidden" id="form-phone" autocomplete="off">
-      <div class="field">
-        <input class="field-input" id="input-phone" type="tel" placeholder="رقم الهاتف" autocomplete="tel"/>
-        <div class="field-highlight"></div>
+      <div id="phone-error" class="auth-error"></div>
+      
+      <div id="phone-step-1">
+        <div class="field">
+          <input class="field-input" id="input-phone" type="tel" placeholder="رقم الهاتف مع رمز الدولة (مثال: +964...)" autocomplete="tel" dir="ltr"/>
+        </div>
+        <div id="recaptcha-container"></div>
+        <button class="btn-gold" type="submit" id="btn-otp-send">
+          <span class="btn-gold-text">إرسال رمز التحقق</span>
+          <span class="btn-gold-shine"></span>
+          <i class="fa-solid fa-paper-plane btn-gold-arrow" id="btn-otp-send-icon"></i>
+          <i class="fa-solid fa-circle-notch fa-spin btn-gold-spinner" id="btn-otp-send-spinner" style="display:none;"></i>
+        </button>
       </div>
-      <button class="btn-gold" type="submit" id="btn-otp">
-        <span class="btn-gold-text">إرسال رمز التحقق</span>
-        <span class="btn-gold-shine"></span>
-        <i class="fa-solid fa-paper-plane btn-gold-arrow"></i>
-      </button>
+
+      <div id="phone-step-2" style="display:none;">
+        <div class="field">
+          <input class="field-input" id="input-otp" type="text" placeholder="رمز التحقق (6 أرقام)" autocomplete="one-time-code" dir="ltr"/>
+        </div>
+        <button class="btn-gold" type="submit" id="btn-otp-verify">
+          <span class="btn-gold-text">تأكيد الدخول</span>
+          <span class="btn-gold-shine"></span>
+          <i class="fa-solid fa-check btn-gold-arrow" id="btn-otp-verify-icon"></i>
+          <i class="fa-solid fa-circle-notch fa-spin btn-gold-spinner" id="btn-otp-verify-spinner" style="display:none;"></i>
+        </button>
+        <button type="button" class="btn-outline" id="btn-phone-back" style="width:100%; margin-top:12px; padding:12px;">
+          تعديل رقم الهاتف
+        </button>
+      </div>
     </form>
 
     <!-- Divider -->

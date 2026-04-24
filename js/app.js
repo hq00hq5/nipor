@@ -3,7 +3,7 @@
 // ║  Royal Black · Antique Gold · Cuneiform Heritage        ║
 // ║  Bottom Navigation · 4 Views · Zero Emoji               ║
 // ╚══════════════════════════════════════════════════════════╝
-import { db, collection, onSnapshot, query, orderBy } from '../firebase.js';
+import { db, collection, onSnapshot, query, orderBy, auth } from '../firebase.js';
 
 // ═══ STATE ═══
 const S = {
@@ -494,6 +494,11 @@ function closeDetail() { $('detail-panel').classList.remove('active'); $('detail
 //  FAVORITES
 // ══════════════════════════════════════════════════════════
 function toggleFav(book) {
+  if (!auth.currentUser) {
+    toast('يرجى تسجيل الدخول أولاً لإضافة كتب للمفضلة', 'warn');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+    return;
+  }
   const idx = S.favs.findIndex(f=>f.id===book.id);
   if (idx>-1) { S.favs.splice(idx,1); toast(`إزالة "${book.title}" من المفضلة`,'info'); }
   else { S.favs.push({id:book.id,title:book.title,author:book.author,cover:book.cover,price:book.price}); toast(`"${book.title}" في المفضلة`,'success'); }
@@ -508,24 +513,28 @@ function updateFavUI() {
   const body = $('fav-body');
   if (!body) return;
   body.innerHTML = '';
-  if (!c) { body.innerHTML = '<div class="fav-empty"><i class="fa-regular fa-heart" style="font-size:3rem;opacity:.3;color:var(--clr-gold)"></i><br><span>لا توجد كتب في المفضلة</span></div>'; return; }
+  if (!c) { body.innerHTML = '<div class="fav-empty" style="text-align:center;padding:2rem;"><i class="fa-regular fa-heart" style="font-size:3rem;opacity:.3;color:var(--gold)"></i><br><span style="color:var(--txt3);display:block;margin-top:8px;">لا توجد كتب في المفضلة</span></div>'; return; }
   S.favs.forEach(f => {
     const d = document.createElement('div'); d.className = 'fav-item';
-    d.innerHTML = `<div class="fav-item-cover">${f.cover?`<img src="${esc(f.cover)}"/>`:'<div style="display:flex;align-items:center;justify-content:center;height:100%"><i class="fa-solid fa-book"></i></div>'}</div>
-      <div class="fav-item-info"><div class="fav-item-title">${esc(f.title)}</div><div class="fav-item-author">${esc(f.author||'')}</div><div class="fav-item-price">${f.price?Number(f.price).toLocaleString('ar-SA')+' د.ع':'مجاني'}</div></div>
-      <button class="fav-item-remove"><i class="fa-solid fa-xmark"></i></button>`;
+    d.style = "display:flex;align-items:center;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.05);gap:12px;";
+    d.innerHTML = `<div class="fav-item-cover" style="width:48px;height:72px;border-radius:6px;overflow:hidden;flex-shrink:0;">${f.cover?`<img src="${esc(f.cover)}" style="width:100%;height:100%;object-fit:cover;"/>`:'<div style="display:flex;align-items:center;justify-content:center;height:100%;background:rgba(255,255,255,0.05);color:var(--txt-muted)"><i class="fa-solid fa-book"></i></div>'}</div>
+      <div class="fav-item-info" style="flex:1;min-width:0;"><div class="fav-item-title" style="font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(f.title)}</div><div class="fav-item-author" style="font-size:.8rem;color:var(--txt2);margin-bottom:4px;">${esc(f.author||'')}</div><div class="fav-item-price" style="color:var(--gold);font-weight:700;font-size:.9rem;">${f.price?Number(f.price).toLocaleString('ar-SA')+' د.ع':'مجاني'}</div></div>
+      <button class="fav-item-remove" style="background:none;border:none;color:var(--txt-muted);padding:8px;border-radius:8px;cursor:pointer;transition:all 0.3s;"><i class="fa-solid fa-xmark"></i></button>`;
     d.querySelector('.fav-item-remove').addEventListener('click', ()=>{const b=S.books.find(x=>x.id===f.id)||f;toggleFav(b);});
     body.appendChild(d);
   });
 }
-function openFav() { $('fav-panel').classList.add('open'); $('fav-overlay').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeFav() { $('fav-panel').classList.remove('open'); $('fav-overlay').classList.remove('open'); document.body.style.overflow=''; }
 
 
 // ══════════════════════════════════════════════════════════
 //  CART / ORDERS
 // ══════════════════════════════════════════════════════════
 function addToCart(book) {
+  if (!auth.currentUser) {
+    toast('يرجى تسجيل الدخول أولاً لإضافة كتب للسلة', 'warn');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+    return;
+  }
   const maxStock = book.stockQuantity ?? Infinity;
   const ex = S.cart.find(i=>i.id===book.id);
   const currentQty = ex ? ex.qty : 0;
@@ -624,47 +633,95 @@ function haptic(el) { el.classList.remove('haptic'); void el.offsetWidth; el.cla
 
 
 // ══════════════════════════════════════════════════════════
-//  AUTH — MOCK MODE (Firebase Auth Bypassed for UI Testing)
+//  AUTH — FIREBASE INTEGRATION
 // ══════════════════════════════════════════════════════════
-// NOTE: Firebase Auth is intentionally disabled for UI testing.
-// onAuthStateChanged has been removed to prevent stuck states.
-import { doc, updateDoc, increment } from '../firebase.js';
+import { doc, updateDoc, increment, storage, ref, uploadBytes, getDownloadURL } from '../firebase.js';
+import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
-let currentUser = { uid: 'guest-user', displayName: 'زائر', email: 'guest@nippur.local' };
+let currentUser = null;
 
 function initAuth() {
-  // No Firebase auth listener — app is 100% accessible
-  console.log('%c AUTH BYPASS ACTIVE — Guest Mode','color:#D4AF37;font-weight:700;background:#1a1a1a;padding:4px 8px;border-radius:4px');
-
-  $('auth-close')?.addEventListener('click', ()=>$('auth-overlay').classList.remove('active'));
-  $('auth-email-btn')?.addEventListener('click', ()=>{
-    const e=$('auth-email').value.trim();
-    if(!e){toast('أدخل البريد الإلكتروني','error');return}
-    currentUser = {uid:'mock-email', displayName: e.split('@')[0], email: e};
-    $('auth-overlay').classList.remove('active');
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    if (user) {
+      console.log('User logged in:', user.email || user.phoneNumber);
+      // Show profile, hide login button
+      const openBtn = $('btn-auth-open');
+      if (openBtn) openBtn.style.display = 'none';
+      
+      const profileInfo = $('account-profile-info');
+      if (profileInfo) {
+        profileInfo.classList.remove('hidden');
+        $('profile-name').textContent = user.displayName || 'مستخدم نيپور';
+        $('profile-email').textContent = user.email || user.phoneNumber || '';
+        
+        const photoUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Nippur')}&background=D4AF37&color=0A0A0A`;
+        $('profile-pic').src = photoUrl;
+      }
+      
+      const favsCard = $('account-favorites');
+      if (favsCard) favsCard.classList.remove('hidden');
+      
+      const logoutCard = $('logout-card');
+      if (logoutCard) logoutCard.classList.remove('hidden');
+      
+    } else {
+      console.log('User logged out (Guest Mode)');
+      const openBtn = $('btn-auth-open');
+      if (openBtn) openBtn.style.display = 'block';
+      
+      const profileInfo = $('account-profile-info');
+      if (profileInfo) profileInfo.classList.add('hidden');
+      
+      const favsCard = $('account-favorites');
+      if (favsCard) favsCard.classList.add('hidden');
+      
+      const logoutCard = $('logout-card');
+      if (logoutCard) logoutCard.classList.add('hidden');
+    }
   });
-  $('auth-phone-btn')?.addEventListener('click', ()=>{
-    const p=$('auth-phone').value.trim();
-    if(!p){toast('أدخل رقم الهاتف','error');return}
-    currentUser = {uid:'mock-phone', displayName: 'مستخدم', phone: p};
-    $('auth-overlay').classList.remove('active');
+
+  // Profile picture upload
+  $('profile-pic-upload')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file || !auth.currentUser) return;
+    
+    toast('جاري تحديث الصورة...', 'gold');
+    try {
+      const storageRef = ref(storage, `profiles/${auth.currentUser.uid}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      await updateProfile(auth.currentUser, { photoURL: url });
+      $('profile-pic').src = url;
+      toast('تم تحديث الصورة بنجاح', 'success');
+    } catch (err) {
+      console.error(err);
+      toast('حدث خطأ أثناء تحديث الصورة', 'error');
+    }
   });
 
-  // Open auth from account view
-  $('btn-auth-open')?.addEventListener('click', () => {
-    $('auth-overlay').classList.add('active');
-  });
-
-  // Checkout — works without real auth
+  // Checkout — require auth
   $('cart-checkout')?.addEventListener('click', () => {
     if (!S.cart.length) { toast('السلة فارغة','info'); return; }
+    if (!auth.currentUser) {
+      toast('يرجى تسجيل الدخول لإتمام الطلب', 'warn');
+      setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+      return;
+    }
     placeOrder();
+  });
+
+  // Logout
+  $('btn-logout')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const { signOut } = await import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js");
+    await signOut(auth);
+    window.location.href = 'index.html';
   });
 }
 
 async function placeOrder() {
   toast('جاري إرسال الطلب...', 'gold');
-  // Attempt Firestore stock update, but don't block on failure
   const promises = S.cart.map(item => {
     if (item.stockQuantity !== undefined && item.stockQuantity !== null && item.stockQuantity !== '') {
       const d = doc(db, 'books', item.id);
@@ -772,10 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateCartUI();
   updateFavUI();
 
-  // Favorites panel
-  $('fav-toggle')?.addEventListener('click', openFav);
-  $('fav-close')?.addEventListener('click', closeFav);
-  $('fav-overlay')?.addEventListener('click', closeFav);
+
 
   // Detail panel
   $('detail-close')?.addEventListener('click', closeDetail);
