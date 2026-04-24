@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+  <meta name="description" content="نيپور — الوسيط الرقمي الفاخر. سجّل دخولك واستمتع بتجربة فريدة."/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#060608"/>
+  <title>نيپور | مرحبا بك</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script type="module" crossorigin src="/assets/welcome-DQq8U3p4.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/assets/welcome-CReCAWjd.css">
+</head>
+<body>
+
+<!-- ═══ ANIMATED BACKGROUND LAYERS ═══ -->
+<div class="bg-base"></div>
+<canvas id="cuneiform-canvas"></canvas>
+<div class="bg-glow bg-glow--top"></div>
+<div class="bg-glow bg-glow--bottom"></div>
+<div class="bg-noise"></div>
+<div class="bg-vignette"></div>
+
+<!-- ═══ FLOATING CUNEIFORM CHARACTERS ═══ -->
+<div class="floating-glyphs" id="floating-glyphs" aria-hidden="true"></div>
+
+<!-- ═══ MAIN CONTAINER ═══ -->
+<main class="login-main" id="login-main">
+
+  <!-- ── Brand Header ── -->
+  <header class="brand" id="brand">
+    <div class="brand-lamassu">
+      <svg class="lamassu-svg" viewBox="0 0 120 120" fill="none">
+        <circle cx="60" cy="60" r="56" stroke="url(#gold-ring)" stroke-width="1.5" opacity="0.4"/>
+        <circle cx="60" cy="60" r="48" stroke="url(#gold-ring)" stroke-width="0.8" opacity="0.2"/>
+        <defs><linearGradient id="gold-ring" x1="0" y1="0" x2="120" y2="120"><stop stop-color="#D4AF37"/><stop offset="1" stop-color="#E8C547"/></linearGradient></defs>
+      </svg>
+      <span class="lamassu-glyph">&#x12000;</span>
+    </div>
+    <h1 class="brand-name">نيپور</h1>
+    <p class="brand-tagline">الوسيط الرقمي الفاخر</p>
+    <div class="brand-line"></div>
+  </header>
+
+  <!-- ── Glassmorphic Auth Card ── -->
+  <section class="glass-card" id="glass-card">
+    <div class="glass-card-glow"></div>
+
+    <!-- Tab Switcher: Email / Phone -->
+    <div class="auth-tabs" id="auth-tabs">
+      <button class="auth-tab active" data-tab="email" id="tab-email">
+        <i class="fa-solid fa-envelope"></i> البريد الإلكتروني
+      </button>
+      <button class="auth-tab" data-tab="phone" id="tab-phone">
+        <i class="fa-solid fa-mobile-screen"></i> رقم الهاتف
+      </button>
+      <div class="auth-tab-indicator" id="tab-indicator"></div>
+    </div>
+
+    <!-- Email Form -->
+    <form class="auth-form" id="form-email" autocomplete="off">
+      <div class="field">
+        <div class="field-icon"><i class="fa-solid fa-at"></i></div>
+        <input class="field-input" id="input-email" type="email" placeholder=" " autocomplete="email"/>
+        <label class="field-label" for="input-email">البريد الإلكتروني</label>
+        <div class="field-highlight"></div>
+      </div>
+      <div class="field">
+        <div class="field-icon"><i class="fa-solid fa-lock"></i></div>
+        <input class="field-input" id="input-pass" type="password" placeholder=" "/>
+        <label class="field-label" for="input-pass">كلمة المرور</label>
+        <button class="field-toggle" id="pass-toggle" type="button"><i class="fa-solid fa-eye"></i></button>
+        <div class="field-highlight"></div>
+      </div>
+      <a href="#" class="forgot-link" id="forgot-link">نسيت كلمة المرور؟</a>
+      <button class="btn-gold" type="submit" id="btn-login">
+        <span class="btn-gold-text">تسجيل الدخول</span>
+        <span class="btn-gold-shine"></span>
+        <i class="fa-solid fa-arrow-left btn-gold-arrow"></i>
+      </button>
+    </form>
+
+    <!-- Phone Form -->
+    <form class="auth-form auth-form--hidden" id="form-phone" autocomplete="off">
+      <div class="field">
+        <div class="field-icon"><i class="fa-solid fa-phone"></i></div>
+        <input class="field-input" id="input-phone" type="tel" placeholder=" " autocomplete="tel"/>
+        <label class="field-label" for="input-phone">رقم الهاتف</label>
+        <div class="field-highlight"></div>
+      </div>
+      <button class="btn-gold" type="submit" id="btn-otp">
+        <span class="btn-gold-text">إرسال رمز التحقق</span>
+        <span class="btn-gold-shine"></span>
+        <i class="fa-solid fa-paper-plane btn-gold-arrow"></i>
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="divider"><span>أو</span></div>
+
+    <!-- Register & Guest -->
+    <button class="btn-outline" id="btn-register">
+      <i class="fa-solid fa-user-plus"></i>
+      <span>إنشاء حساب جديد</span>
+    </button>
+    <button class="btn-ghost" id="btn-guest">
+      <i class="fa-regular fa-eye"></i>
+      <span>تصفح كزائر</span>
+    </button>
+  </section>
+
+  <!-- Footer -->
+  <footer class="login-footer" id="login-footer">
+    <span>&copy; 2025 نيپور — جميع الحقوق محفوظة</span>
+  </footer>
+</main>
+
+<!-- ═══ GOLD SUCCESS MODAL ═══ -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-card" id="modal-card">
+    <div class="modal-particles" id="modal-particles"></div>
+    <div class="modal-icon"><i class="fa-solid fa-check"></i></div>
+    <h2 class="modal-title" id="modal-title">مرحبا بك في نيپور</h2>
+    <p class="modal-desc" id="modal-desc">جاري تحميل مكتبتك...</p>
+    <div class="modal-bar"><div class="modal-bar-fill"></div></div>
+  </div>
+</div>
+
+</body>
+</html>
