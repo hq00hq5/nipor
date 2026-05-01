@@ -1,17 +1,11 @@
 // ╔══════════════════════════════════════════════════════════╗
-// ║  Nippur Admin — Final Vision with Firebase Storage      ║
-// ║  CRUD: publishers (icon upload), books (cover+gallery)  ║
-// ║  Categories overview · Live Firestore sync              ║
+// ║  Nippur Admin — Supabase Edition                        ║
+// ║  CRUD: publishers, books, slides · Live Supabase sync   ║
 // ╚══════════════════════════════════════════════════════════╝
-import {
-  db,
-  collection, addDoc, getDocs, onSnapshot,
-  doc, deleteDoc, updateDoc, query, orderBy,
-  serverTimestamp
-} from '../firebase.js';
+import { supabase } from '../supabase.js';
 
 // ═══ STATE ═══
-const ST = { publishers:[], books:[] };
+const ST = { publishers:[], books:[], slides:[] };
 const $=id=>document.getElementById(id);
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function setLoading(btn,on){const sp=btn.querySelector('.btn-spinner'),tx=btn.querySelector('.btn-text');btn.disabled=on;sp?.classList.toggle('hidden',!on);if(tx)tx.style.opacity=on?'0.6':'1'}
@@ -48,8 +42,8 @@ function previewFiles(input, previewEl) {
 }
 
 // ═══ NAV ═══
-const SECTIONS=['overview','publishers','books','categories'];
-const CRUMBS={overview:'نظرة عامة',publishers:'دور النشر',books:'الكتب',categories:'التصنيفات'};
+const SECTIONS=['overview','publishers','books','slides','categories'];
+const CRUMBS={overview:'نظرة عامة',publishers:'دور النشر',books:'الكتب',slides:'اللافتات (سلايدر)',categories:'التصنيفات'};
 function showSection(id){SECTIONS.forEach(s=>{$(`section-${s}`)?.classList.toggle('active',s===id);$(`nav-${s}`)?.classList.toggle('active',s===id)});$('breadcrumb-text').textContent=CRUMBS[id]||id}
 function initNav(){SECTIONS.forEach(id=>{const n=$(`nav-${id}`);n?.addEventListener('click',e=>{e.preventDefault();showSection(id)})});showSection('overview')}
 
@@ -73,7 +67,7 @@ function initPubForm() {
     setLoading(btn,true);
     console.log('Attempting to save...');
     try{
-      // ── Convert to Base64 if provided ──
+      // -- Convert to Base64 if provided --
       if(fileInput.files && fileInput.files[0]){
         try {
           toast('جاري تحويل الشعار…','gold');
@@ -85,44 +79,24 @@ function initPubForm() {
         }
       }
 
-      // ── Build document data ──
-      const data = {
-        name: name,
-        icon: icon || '',
-        weight: weight,
-        bio: bio || '',
-        updatedAt: serverTimestamp()
-      };
-
-      console.log('[SAVE] Publisher:', { editId: editId.value || '(new)', ...data, updatedAt: '(serverTimestamp)' });
+      const data = { name, icon: icon || '', weight, bio: bio || '' };
 
       if(editId.value){
-        await updateDoc(doc(db,'publishers',editId.value), data);
+        const { error } = await supabase.from('publishers').update(data).eq('id', editId.value);
+        if (error) throw error;
         toast(`تم تحديث "${name}"`,'success');
       } else {
-        data.createdAt = serverTimestamp();
-        const docRef = await addDoc(collection(db,'publishers'), data);
-        console.log('[OK] Publisher saved with ID:', docRef.id);
+        data.id = 'pub_' + Date.now();
+        const { error } = await supabase.from('publishers').insert(data);
+        if (error) throw error;
         toast(`تمت إضافة "${name}"`,'success');
       }
 
-      console.log('Save successful!');
-      // ── Reset form ──
       form.reset();editId.value='';title.textContent='إضافة دار نشر';cancel?.classList.add('hidden');preview.innerHTML='';
+      loadData();
     } catch(err) {
-      alert(`Save Failed (Publisher)! EXACT ERROR:\n${err.message}\nCode: ${err.code}`);
-      // ── Decode specific Firestore errors ──
-      const code = err.code || '';
-      if(code === 'permission-denied'){
-        toast('صلاحيات Firestore: تأكد من فتح القواعد في Firebase Console','error',6000);
-      } else if(code === 'unauthenticated') {
-        toast('غير مصادق — سجل الدخول أولاً','error',5000);
-      } else if(code === 'unavailable' || code === 'deadline-exceeded') {
-        toast('خطأ اتصال — تحقق من الإنترنت','error',5000);
-      } else {
-        toast(`خطأ: ${err.message}`,'error',5000);
-      }
-      console.error('[ERR] Publisher save failed:', { code, message: err.message, stack: err.stack });
+      toast(`خطأ: ${err.message}`,'error',5000);
+      console.error('[ERR] Publisher save failed:', err);
     }
     finally{setLoading(btn,false)}
   });
@@ -143,7 +117,7 @@ function renderPubs(pubs){
       $('pub-edit-id').value=p.id;$('pub-name').value=p.name||'';$('pub-icon-url').value=p.icon||'';$('pub-weight').value=p.weight||1;$('pub-bio').value=p.bio||'';
       $('pub-form-title').textContent=`تعديل: ${p.name}`;$('cancel-edit-pub')?.classList.remove('hidden');showSection('publishers');$('pub-form')?.scrollIntoView({behavior:'smooth'});
     });
-    tr.querySelector('[data-del]').addEventListener('click',async()=>{if(!confirm(`حذف "${p.name}"؟`))return;try{await deleteDoc(doc(db,'publishers',p.id));toast(`حذف "${p.name}"`,'warn')}catch(e){console.error('Delete publisher error:',e);toast(`خطأ: ${e.message}`,'error')}});
+    tr.querySelector('[data-del]').addEventListener('click',async()=>{if(!confirm(`حذف "${p.name}"؟`))return;try{await supabase.from('publishers').delete().eq('id',p.id);toast(`حذف "${p.name}"`,'warn');loadData()}catch(e){console.error('Delete publisher error:',e);toast(`خطأ: ${e.message}`,'error')}});
     tbody.appendChild(tr);
   });
 }
@@ -189,77 +163,45 @@ function initBookForm(){
     setLoading(btn,true);
     console.log('Attempting to save...');
     try{
-      // ── Convert cover to Base64 ──
       if(coverFile.files && coverFile.files[0]){
         try {
           toast('جاري تحويل الغلاف…','gold');
           cover = await fileToBase64(coverFile.files[0]);
         } catch(uploadErr) {
-          console.warn("Cover conversion failed, proceeding with text only", uploadErr);
-          toast('فشل تحويل الغلاف، سيتم الحفظ بدون صورة','warn');
-          cover = '';
+          console.warn("Cover conversion failed", uploadErr);
+          toast('فشل تحويل الغلاف','warn'); cover = '';
         }
       }
-
-      // ── Convert gallery images sequentially to Base64 ──
       if(galleryFile.files && galleryFile.files.length > 0){
         toast(`جاري تحويل ${galleryFile.files.length} صورة…`,'gold');
         for(let i = 0; i < galleryFile.files.length; i++){
-          try {
-            const f = galleryFile.files[i];
-            const base64Str = await fileToBase64(f);
-            if(base64Str) gallery.push(base64Str);
-          } catch(galErr) {
-            console.warn(`Gallery conversion failed for image ${i}`, galErr);
-          }
+          try { const base64Str = await fileToBase64(galleryFile.files[i]); if(base64Str) gallery.push(base64Str); }
+          catch(galErr) { console.warn(`Gallery conversion failed for image ${i}`, galErr); }
         }
       }
 
-      // ── Build document (ensure no undefined/NaN values) ──
       const data = {
-        title: t,
-        author: a,
-        cover: cover || '',
-        gallery: gallery,
-        price: price,
-        category: cat,
-        publisherId: pubId,
-        publisherName: pub?.name || '',
-        stockQuantity: stock,
-        editionYear: editionYear,
-        coverType: coverType,
-        updatedAt: serverTimestamp()
+        title: t, author: a, cover: cover || '', gallery,
+        price, category: cat, "publisherId": pubId, "publisherName": pub?.name || '',
+        "stockQuantity": stock, "editionYear": editionYear, "coverType": coverType
       };
 
-      console.log('[SAVE] Book:', { editId: editId.value || '(new)', title: t, author: a, price, stockQuantity: stock, category: cat, publisherId: pubId, coverUrl: cover ? cover.substring(0,50)+'...' : '(none)', galleryCount: gallery.length });
-
       if(editId.value){
-        await updateDoc(doc(db,'books',editId.value), data);
+        const { error } = await supabase.from('books').update(data).eq('id', editId.value);
+        if (error) throw error;
         toast(`تم تحديث "${t}"`,'success');
       } else {
-        data.createdAt = serverTimestamp();
-        const docRef = await addDoc(collection(db,'books'), data);
-        console.log('[OK] Book saved with ID:', docRef.id);
+        data.id = 'book_' + Date.now();
+        const { error } = await supabase.from('books').insert(data);
+        if (error) throw error;
         toast(`تمت إضافة "${t}"`,'success');
       }
 
-      console.log('Save successful!');
-      // ── Reset form ──
       form.reset();editId.value='';title.textContent='إضافة كتاب';cancel?.classList.add('hidden');coverPreview.innerHTML='';galleryPreview.innerHTML='';
+      loadData();
     } catch(e) {
-      alert(`Save Failed (Book)! EXACT ERROR:\n${e.message}\nCode: ${e.code}`);
-      // ── Decode specific Firestore errors ──
-      const code = e.code || '';
-      if(code === 'permission-denied'){
-        toast('صلاحيات Firestore: تأكد من فتح القواعد في Firebase Console','error',6000);
-      } else if(code === 'unauthenticated') {
-        toast('غير مصادق — سجل الدخول أولاً','error',5000);
-      } else if(code === 'unavailable' || code === 'deadline-exceeded') {
-        toast('خطأ اتصال — تحقق من الإنترنت','error',5000);
-      } else {
-        toast(`خطأ: ${e.message}`,'error',5000);
-      }
-      console.error('[ERR] Book save failed:', { code, message: e.message, stack: e.stack });
+      toast(`خطأ: ${e.message}`,'error',5000);
+      console.error('[ERR] Book save failed:', e);
     }
     finally{setLoading(btn,false)}
   });
@@ -286,7 +228,89 @@ function renderBooks(books){
       $('book-form-title').textContent=`تعديل: ${b.title}`;$('cancel-edit-book')?.classList.remove('hidden');
       showSection('books');$('book-form')?.scrollIntoView({behavior:'smooth'});
     });
-    tr.querySelector('[data-del]').addEventListener('click',async()=>{if(!confirm(`حذف "${b.title}"؟`))return;try{await deleteDoc(doc(db,'books',b.id));toast(`حذف "${b.title}"`,'warn')}catch(e){console.error('Delete book error:',e);toast(`خطأ: ${e.message}`,'error')}});
+    tr.querySelector('[data-del]').addEventListener('click',async()=>{if(!confirm(`حذف "${b.title}"؟`))return;try{await supabase.from('books').delete().eq('id',b.id);toast(`حذف "${b.title}"`,'warn');loadData()}catch(e){console.error('Delete book error:',e);toast(`خطأ: ${e.message}`,'error')}});
+    tbody.appendChild(tr);
+  });
+}
+
+// ═══ SLIDES FORM & TABLE ═══
+function initSlideForm() {
+  const form = $('slide-form'), btn = $('slide-submit');
+  const fileInput = $('slide-file'), preview = $('slide-preview'), label = $('slide-file-label');
+  
+  fileInput?.addEventListener('change', () => {
+    label.textContent = fileInput.files[0]?.name || 'اختر صورة السلايد';
+    previewFiles(fileInput, preview);
+  });
+
+  form?.addEventListener('submit', async e => {
+    e.preventDefault();
+    
+    if (!fileInput.files || !fileInput.files[0]) {
+      toast('الرجاء اختيار صورة', 'error');
+      return;
+    }
+    
+    const file = fileInput.files[0];
+    setLoading(btn, true);
+    const btnText = btn.querySelector('.btn-text');
+    if (btnText) btnText.textContent = 'جاري الرفع...';
+    
+    try {
+      const fileName = `slide_${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const { error: upErr } = await supabase.storage.from('slides').upload(fileName, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from('slides').getPublicUrl(fileName);
+      const imageUrl = urlData.publicUrl;
+
+      const { error: insErr } = await supabase.from('homepage_slides').insert({ image_url: imageUrl });
+      if (insErr) throw insErr;
+
+      toast('تمت إضافة السلايد بنجاح', 'success');
+      form.reset();
+      if (preview) preview.innerHTML = '';
+      if (label) label.textContent = 'اختر صورة السلايد';
+      loadData();
+    } catch (err) {
+      console.error('[SUPABASE STORAGE ERROR]', err);
+      toast('فشل الرفع: ' + (err.message || ''), 'error', 6000);
+    } finally {
+      setLoading(btn, false);
+      if (btnText) btnText.innerHTML = '<i class="fa-solid fa-plus"></i> إضافة';
+    }
+  });
+}
+
+function renderSlides(slides) {
+  const tbody = $('slide-tbody'), empty = $('slide-empty');
+  if (!tbody) return;
+  tbody.querySelectorAll('tr[data-row]').forEach(r => r.remove());
+  if (!slides.length) { empty?.classList.remove('hidden'); return; }
+  empty?.classList.add('hidden');
+  
+  slides.forEach(s => {
+    const tr = document.createElement('tr');
+    tr.dataset.row = s.id;
+    tr.innerHTML = `
+      <td>
+        <div style="width:120px;height:60px;border-radius:var(--r-sm);overflow:hidden;background:var(--clr-surface-2);border:1px solid var(--clr-border)">
+          <img src="${esc(s.image_url)}" style="width:100%;height:100%;object-fit:cover"/>
+        </div>
+      </td>
+      <td>
+        <button class="btn btn-danger btn-sm" data-del="${s.id}"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    `;
+    tr.querySelector('[data-del]').addEventListener('click', async () => {
+      if (!confirm('حذف هذا السلايد؟')) return;
+      try {
+        await supabase.from('homepage_slides').delete().eq('id', s.id);
+        toast('تم حذف السلايد', 'warn');
+        loadData();
+      } catch (err) {
+        toast('خطأ: ' + err.message, 'error');
+      }
+    });
     tbody.appendChild(tr);
   });
 }
@@ -318,53 +342,46 @@ function populateSelect(pubs){
   if(prev)sel.value=prev;
 }
 
-// ═══ FIRESTORE LIVE SYNC ═══
-function initFirestore(){
-  console.log('[INIT] Connecting to Firestore...');
+// ═══ SUPABASE DATA LOAD ═══
+async function loadData(){
+  console.log('[INIT] Loading from Supabase...');
+  try {
+    const { data: pubs, error: pubErr } = await supabase.from('publishers').select('*').order('weight', { ascending: true });
+    if (pubErr) throw pubErr;
+    const statusEl = $('firebase-status-text');
+    if (statusEl) statusEl.textContent = 'Supabase متصل';
+    ST.publishers = pubs || [];
+    renderPubs(ST.publishers); populateSelect(ST.publishers); animC('admin-stat-pubs', ST.publishers.length);
+  } catch (err) {
+    console.error('[ERR] Supabase publishers:', err);
+    const statusEl = $('firebase-status-text');
+    if (statusEl) statusEl.textContent = 'غير متصل';
+    toast('خطأ: ' + err.message, 'error', 6000);
+  }
 
-  // ── Publishers listener ──
-  const pubQ=query(collection(db,'publishers'),orderBy('weight','asc'));
-  onSnapshot(pubQ,snap=>{
-    console.log(`[SYNC] Publishers snapshot: ${snap.size} docs`);
-    $('firebase-status-text').textContent='Firebase متصل';
-    ST.publishers=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderPubs(ST.publishers);populateSelect(ST.publishers);animC('admin-stat-pubs',ST.publishers.length);
-  },err=>{
-    const code = err.code || '';
-    console.error('[ERR] Firestore publishers error:', { code, message: err.message });
-    $('firebase-status-text').textContent='غير متصل';
-    if(code === 'permission-denied') {
-      toast('قواعد Firestore تمنع القراءة — افتح القواعد في Firebase Console','error',8000);
-    } else if(code === 'failed-precondition') {
-      toast('Firestore يحتاج فهرس — تحقق من Console','error',6000);
-    } else {
-      toast('Firestore: '+err.message,'error',6000);
-    }
-  });
+  try {
+    const { data: books, error: bookErr } = await supabase.from('books').select('*').order('createdAt', { ascending: false });
+    if (bookErr) throw bookErr;
+    ST.books = books || [];
+    renderBooks(ST.books); renderCats(ST.books);
+    animC('admin-stat-books', ST.books.length);
+    animC('admin-stat-cats', new Set(ST.books.map(b => b.category).filter(Boolean)).size);
+  } catch (err) {
+    console.error('[ERR] Supabase books:', err);
+  }
 
-  // ── Books listener ──
-  const booksQ=query(collection(db,'books'),orderBy('createdAt','desc'));
-  onSnapshot(booksQ,snap=>{
-    console.log(`[SYNC] Books snapshot: ${snap.size} docs`);
-    ST.books=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderBooks(ST.books);renderCats(ST.books);
-    animC('admin-stat-books',ST.books.length);
-    animC('admin-stat-cats',new Set(ST.books.map(b=>b.category).filter(Boolean)).size);
-  },err=>{
-    const code = err.code || '';
-    console.error('[ERR] Firestore books error:', { code, message: err.message });
-    if(code === 'permission-denied') {
-      toast('قواعد Firestore تمنع قراءة الكتب','error',6000);
-    } else if(code === 'failed-precondition') {
-      toast('الكتب تحتاج فهرس createdAt — تحقق من Console','error',6000);
-    } else {
-      toast('خطأ الكتب: '+err.message,'error',5000);
-    }
-  });
+  try {
+    const { data: slides, error: slideErr } = await supabase.from('homepage_slides').select('*').order('createdAt', { ascending: false });
+    if (slideErr) throw slideErr;
+    ST.slides = slides || [];
+    renderSlides(ST.slides);
+  } catch (err) {
+    console.warn('[ERR] Supabase slides:', err.message);
+  }
 }
 
 // ═══ BOOT ═══
-document.addEventListener('DOMContentLoaded',()=>{
-  initNav();initPubForm();initBookForm();initFirestore();
-  console.log('%c Nippur Admin — Royal Black Edition','color:#D4AF37;font-weight:900;font-size:14px');
+document.addEventListener('DOMContentLoaded', () => {
+  initNav(); initPubForm(); initBookForm(); initSlideForm(); loadData();
+  console.log('%c Nippur Admin — Supabase Edition', 'color:#D4AF37;font-weight:900;font-size:14px');
 });

@@ -3,7 +3,7 @@
 // ║  Royal Black · Antique Gold · Cuneiform Heritage        ║
 // ║  Bottom Navigation · 4 Views · Zero Emoji               ║
 // ╚══════════════════════════════════════════════════════════╝
-import { db, collection, onSnapshot, query, orderBy, auth } from '../firebase.js';
+import { supabase } from '../supabase.js';
 
 // ═══ STATE ═══
 const S = {
@@ -494,7 +494,7 @@ function closeDetail() { $('detail-panel').classList.remove('active'); $('detail
 //  FAVORITES
 // ══════════════════════════════════════════════════════════
 function toggleFav(book) {
-  if (!auth.currentUser) {
+  if (!currentUser) {
     toast('يرجى تسجيل الدخول أولاً لإضافة كتب للمفضلة', 'warn');
     setTimeout(() => { window.location.href = 'index.html'; }, 1500);
     return;
@@ -530,7 +530,7 @@ function updateFavUI() {
 //  CART / ORDERS
 // ══════════════════════════════════════════════════════════
 function addToCart(book) {
-  if (!auth.currentUser) {
+  if (!currentUser) {
     toast('يرجى تسجيل الدخول أولاً لإضافة كتب للسلة', 'warn');
     setTimeout(() => { window.location.href = 'index.html'; }, 1500);
     return;
@@ -633,75 +633,81 @@ function haptic(el) { el.classList.remove('haptic'); void el.offsetWidth; el.cla
 
 
 // ══════════════════════════════════════════════════════════
-//  AUTH — FIREBASE INTEGRATION
+//  AUTH — SUPABASE INTEGRATION
 // ══════════════════════════════════════════════════════════
-import { doc, updateDoc, increment, storage, ref, uploadBytes, getDownloadURL } from '../firebase.js';
-import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
 let currentUser = null;
 
 function initAuth() {
-  onAuthStateChanged(auth, (user) => {
-    currentUser = user;
+  // Check initial session
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    currentUser = session?.user || null;
+    applyAuthUI(currentUser);
+  });
+
+  // Listen for auth changes
+  supabase.auth.onAuthStateChange((event, session) => {
+    currentUser = session?.user || null;
+    applyAuthUI(currentUser);
+  });
+
+  function applyAuthUI(user) {
     if (user) {
-      console.log('User logged in:', user.email || user.phoneNumber);
-      // Show profile, hide login button
+      console.log('User logged in:', user.email || user.phone);
       const openBtn = $('btn-auth-open');
       if (openBtn) openBtn.style.display = 'none';
-      
+
       const profileInfo = $('account-profile-info');
       if (profileInfo) {
         profileInfo.classList.remove('hidden');
-        $('profile-name').textContent = user.displayName || 'مستخدم نيپور';
-        $('profile-email').textContent = user.email || user.phoneNumber || '';
-        
-        const photoUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Nippur')}&background=D4AF37&color=0A0A0A`;
+        const meta = user.user_metadata || {};
+        $('profile-name').textContent = meta.full_name || 'مستخدم نيپور';
+        $('profile-email').textContent = user.email || user.phone || '';
+
+        const photoUrl = meta.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(meta.full_name || 'Nippur')}&background=D4AF37&color=0A0A0A`;
         $('profile-pic').src = photoUrl;
-        
+
         const dPic = $('drawer-user-pic'); if (dPic) dPic.src = photoUrl;
-        const dName = $('drawer-user-name'); if (dName) dName.textContent = user.displayName || 'مستخدم نيپور';
-        const dEmail = $('drawer-user-email'); if (dEmail) dEmail.textContent = user.email || user.phoneNumber || '';
+        const dName = $('drawer-user-name'); if (dName) dName.textContent = meta.full_name || 'مستخدم نيپور';
+        const dEmail = $('drawer-user-email'); if (dEmail) dEmail.textContent = user.email || user.phone || '';
         const dLogout = $('drawer-footer-logout'); if (dLogout) dLogout.classList.remove('hidden');
       }
-      
+
       const favsCard = $('account-favorites');
       if (favsCard) favsCard.classList.remove('hidden');
-      
       const logoutCard = $('logout-card');
       if (logoutCard) logoutCard.classList.remove('hidden');
-      
+
     } else {
       console.log('User logged out (Guest Mode)');
       const openBtn = $('btn-auth-open');
       if (openBtn) openBtn.style.display = 'block';
-      
       const profileInfo = $('account-profile-info');
       if (profileInfo) profileInfo.classList.add('hidden');
-      
+
       const dPic = $('drawer-user-pic'); if (dPic) dPic.src = 'https://ui-avatars.com/api/?name=Guest&background=D4AF37&color=0A0A0A';
       const dName = $('drawer-user-name'); if (dName) dName.textContent = 'زائر';
       const dEmail = $('drawer-user-email'); if (dEmail) dEmail.textContent = 'يرجى تسجيل الدخول';
       const dLogout = $('drawer-footer-logout'); if (dLogout) dLogout.classList.add('hidden');
-      
       const favsCard = $('account-favorites');
       if (favsCard) favsCard.classList.add('hidden');
-      
       const logoutCard = $('logout-card');
       if (logoutCard) logoutCard.classList.add('hidden');
     }
-  });
+  }
 
   // Profile picture upload
   $('profile-pic-upload')?.addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if (!file || !auth.currentUser) return;
-    
+    if (!file || !currentUser) return;
     toast('جاري تحديث الصورة...', 'gold');
     try {
-      const storageRef = ref(storage, `profiles/${auth.currentUser.uid}`);
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      await updateProfile(auth.currentUser, { photoURL: url });
+      const filePath = `${currentUser.id}`;
+      const { error: upErr } = await supabase.storage.from('profiles').upload(filePath, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: urlData } = supabase.storage.from('profiles').getPublicUrl(filePath);
+      const url = urlData.publicUrl + '?t=' + Date.now();
+      await supabase.auth.updateUser({ data: { avatar_url: url } });
       $('profile-pic').src = url;
       toast('تم تحديث الصورة بنجاح', 'success');
     } catch (err) {
@@ -710,10 +716,10 @@ function initAuth() {
     }
   });
 
-  // Checkout — require auth
+  // Checkout
   $('cart-checkout')?.addEventListener('click', () => {
     if (!S.cart.length) { toast('السلة فارغة','info'); return; }
-    if (!auth.currentUser) {
+    if (!currentUser) {
       toast('يرجى تسجيل الدخول لإتمام الطلب', 'warn');
       setTimeout(() => { window.location.href = 'index.html'; }, 1500);
       return;
@@ -724,21 +730,27 @@ function initAuth() {
   // Logout
   $('btn-logout')?.addEventListener('click', async (e) => {
     e.preventDefault();
-    const { signOut } = await import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js");
-    await signOut(auth);
+    await supabase.auth.signOut();
+    window.location.href = 'index.html';
+  });
+
+  $('btn-logout-account')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabase.auth.signOut();
     window.location.href = 'index.html';
   });
 }
 
 async function placeOrder() {
   toast('جاري إرسال الطلب...', 'gold');
-  const promises = S.cart.map(item => {
-    if (item.stockQuantity !== undefined && item.stockQuantity !== null && item.stockQuantity !== '') {
-      const d = doc(db, 'books', item.id);
-      return updateDoc(d, { stockQuantity: increment(-item.qty) }).catch(() => {});
+  try {
+    for (const item of S.cart) {
+      if (item.stockQuantity !== undefined && item.stockQuantity !== null && item.stockQuantity !== '') {
+        const newQty = Math.max(0, (item.stockQuantity || 0) - item.qty);
+        await supabase.from('books').update({ "stockQuantity": newQty }).eq('id', item.id);
+      }
     }
-  });
-  await Promise.all(promises).catch(() => {});
+  } catch (e) { console.warn('Stock update error:', e); }
   S.cart = [];
   persist('nip_cart', S.cart);
   updateCartUI();
@@ -782,20 +794,20 @@ function initDrawer() {
   $('drawer-nav-account')?.addEventListener('click', (e) => {
     e.preventDefault();
     closeDrawer();
-    if (auth.currentUser) switchView('account');
+    if (currentUser) switchView('account');
     else window.location.href = 'index.html';
   });
 
   $('drawer-nav-orders')?.addEventListener('click', (e) => {
     e.preventDefault();
     closeDrawer();
-    switchView('orders');
+    switchView('purchases');
   });
 
   $('drawer-nav-favs')?.addEventListener('click', (e) => {
     e.preventDefault();
     closeDrawer();
-    if (auth.currentUser) {
+    if (currentUser) {
       $('fav-overlay')?.classList.add('open');
       $('fav-panel')?.classList.add('open');
       document.body.style.overflow = 'hidden';
@@ -813,13 +825,12 @@ function initDrawer() {
   $('drawer-nav-settings')?.addEventListener('click', (e) => {
     e.preventDefault();
     closeDrawer();
-    switchView('account');
+    switchView('settings');
   });
 
   $('drawer-btn-logout')?.addEventListener('click', async (e) => {
     e.preventDefault();
-    const { signOut } = await import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js");
-    await signOut(auth);
+    await supabase.auth.signOut();
     window.location.href = 'index.html';
   });
 }
@@ -875,23 +886,78 @@ function initSeeAll() {
 
 
 // ══════════════════════════════════════════════════════════
-//  FIRESTORE LIVE DATA
+//  SUPABASE LIVE DATA
 // ══════════════════════════════════════════════════════════
-function initFirestore() {
-  const pubQ = query(collection(db,'publishers'),orderBy('weight','asc'));
-  onSnapshot(pubQ, snap=>{
-    S.publishers=snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderPubs(S.publishers);renderSponsors(S.publishers);
-  }, err=>{ console.warn('Firestore publishers:',err.message); $('pub-grid').innerHTML=''; $('pub-grid').appendChild(emptyEl('<i class="fa-solid fa-plug"></i>','اتصال Firestore','تأكد من تفعيل Firestore')); });
+async function initFirestore() {
+  try {
+    const { data: pubs, error: pubErr } = await supabase.from('publishers').select('*').order('weight', { ascending: true });
+    if (pubErr) throw pubErr;
+    S.publishers = pubs || [];
+    renderPubs(S.publishers); renderSponsors(S.publishers);
+  } catch (err) {
+    console.warn('Supabase publishers:', err.message);
+    $('pub-grid').innerHTML = '';
+    $('pub-grid').appendChild(emptyEl('<i class="fa-solid fa-plug"></i>','اتصال Supabase','تأكد من تفعيل Supabase'));
+  }
 
-  const booksQ = query(collection(db,'books'),orderBy('createdAt','desc'));
-  onSnapshot(booksQ, snap=>{
-    S.books=snap.docs.map(d=>({id:d.id,...d.data()}));
-    S.categories.clear(); S.books.forEach(b=>b.category&&S.categories.add(b.category));
+  try {
+    const { data: books, error: bookErr } = await supabase.from('books').select('*').order('createdAt', { ascending: false });
+    if (bookErr) throw bookErr;
+    S.books = books || [];
+    S.categories.clear(); S.books.forEach(b => b.category && S.categories.add(b.category));
     renderCats(S.books); renderAllRows();
-  }, err=>console.warn('Firestore books:',err.message));
+  } catch (err) {
+    console.warn('Supabase books:', err.message);
+  }
 }
 
+// ══════════════════════════════════════════════════════════
+//  AUTO SLIDER
+// ══════════════════════════════════════════════════════════
+function initSlider() {
+  const container = $('auto-slider-container');
+  const track = $('auto-slider-track');
+  if (!container || !track) return;
+
+  supabase.from('homepage_slides').select('*').then(({ data: slidesData, error }) => {
+    if (error) { console.warn('Supabase slides:', error.message); return; }
+
+    container.style.display = 'block';
+    track.innerHTML = '';
+
+    if (!slidesData || slidesData.length === 0) {
+      for (let i = 0; i < 3; i++) {
+        const div = document.createElement('div');
+        div.className = 'swiper-slide placeholder-slide';
+        div.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--clr-gold);opacity:0.4;"><i class="fa-solid fa-image" style="font-size:3rem;margin-bottom:8px;"></i><span style="font-family:'Cairo';font-weight:700;font-size:1.1rem;">\u0645\u0633\u0627\u062d\u0629 \u0625\u0639\u0644\u0627\u0646\u064a\u0629 ${i + 1}</span></div>`;
+        track.appendChild(div);
+      }
+    } else {
+      slidesData.forEach((s, i) => {
+        const img = document.createElement('img');
+        img.src = s.image_url;
+        img.className = 'swiper-slide slide-img';
+        img.alt = 'Banner ' + (i + 1);
+        track.appendChild(img);
+      });
+    }
+
+    if (window.mySwiperInstance) {
+      window.mySwiperInstance.destroy(true, true);
+    }
+
+    window.mySwiperInstance = new Swiper('.mySwiper', {
+      dir: 'rtl',
+      loop: true,
+      grabCursor: true,
+      spaceBetween: 16,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false,
+      },
+    });
+  });
+}
 
 // ══════════════════════════════════════════════════════════
 //  BOOT
@@ -906,6 +972,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initZoom();
   initSeeAll();
   initFirestore();
+  initSlider();
   initDrawer();
   updateCartUI();
   updateFavUI();
@@ -915,6 +982,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Detail panel
   $('detail-close')?.addEventListener('click', closeDetail);
   $('detail-overlay')?.addEventListener('click', closeDetail);
+
+  // Fav panel close bugfix
+  $('fav-close')?.addEventListener('click', () => {
+    $('fav-overlay')?.classList.remove('open');
+    $('fav-panel')?.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+  $('fav-overlay')?.addEventListener('click', () => {
+    $('fav-overlay')?.classList.remove('open');
+    $('fav-panel')?.classList.remove('open');
+    document.body.style.overflow = '';
+  });
 
   // Back nav (drill-down)
   $('back-nav')?.addEventListener('click', exitDrill);

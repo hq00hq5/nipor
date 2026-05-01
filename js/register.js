@@ -1,10 +1,9 @@
 const $ = id => document.getElementById(id);
 
-import { auth } from '../firebase.js';
-import { createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { supabase } from '../supabase.js';
 
 // ══════════════════════════════════════
-//  CUNEIFORM CANVAS BACKGROUND (Copied from welcome.js)
+//  CUNEIFORM CANVAS BACKGROUND
 // ══════════════════════════════════════
 const canvas = $('cuneiform-canvas');
 const ctx = canvas.getContext('2d');
@@ -24,7 +23,7 @@ resize();
 function draw() {
   ctx.fillStyle = 'rgba(6, 6, 8, 0.1)';
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = 'rgba(212, 175, 55, 0.15)'; // Gold tint
+  ctx.fillStyle = 'rgba(212, 175, 55, 0.15)';
   ctx.font = '14px serif';
   for (let i = 0; i < drops.length; i++) {
     const text = chars[Math.floor(Math.random() * chars.length)];
@@ -71,15 +70,15 @@ function spawnParticles() {
   }
 }
 
-function showSuccess(title, desc) {
+function showSuccess(title, desc, redirectTo = 'library.html') {
   const overlay = $('modal-overlay');
   $('modal-title').textContent = title || 'مرحبا بك في نيپور';
   $('modal-desc').textContent = desc || 'جاري تحميل مكتبتك...';
   spawnParticles();
   overlay.classList.add('active');
   setTimeout(function() {
-    window.location.href = 'library.html';
-  }, 1200);
+    window.location.href = redirectTo;
+  }, redirectTo === 'index.html' ? 2500 : 1200);
 }
 
 // ══════════════════════════════════════
@@ -148,14 +147,14 @@ passInput.addEventListener('input', function() {
     passHint.style.display = 'none';
     return;
   }
-  
+
   const hasMinLength = val.length >= 8;
   const hasUpper = /[A-Z]/.test(val);
   const hasNumber = /[0-9]/.test(val);
   const hasSpecial = /[@#$!%*?&]/.test(val);
-  
+
   if (hasMinLength && hasUpper && hasNumber && hasSpecial) {
-    passHint.style.color = '#10B981'; // Green
+    passHint.style.color = '#10B981';
     passHint.textContent = 'كلمة المرور قوية ومطابقة للشروط.';
   } else {
     passHint.style.color = 'var(--txt3)';
@@ -167,7 +166,7 @@ passInput.addEventListener('input', function() {
 $('form-register').addEventListener('submit', async function(e) {
   e.preventDefault();
   hideError();
-  
+
   const name = $('input-name').value.trim();
   const email = $('input-email').value.trim();
   const password = passInput.value;
@@ -183,7 +182,6 @@ $('form-register').addEventListener('submit', async function(e) {
     return;
   }
 
-  // Strong password policy
   const hasMinLength = password.length >= 8;
   const hasUpper = /[A-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
@@ -199,23 +197,34 @@ $('form-register').addEventListener('submit', async function(e) {
   setBtnLoading(true);
 
   try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    
-    // Update profile with name
-    await updateProfile(user, {
-      displayName: name
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } }
     });
-    
-    showSuccess('تم إنشاء الحساب بنجاح', 'مرحبا بك في عائلة نيپور');
+
+    if (error) throw error;
+
+    // Insert profile record
+    if (data.user) {
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
+        name,
+        email
+      });
+    }
+
+    showSuccess('تم إنشاء الحساب بنجاح', 'مرحبا بك في عائلة نيپور', 'library.html');
   } catch (error) {
     setBtnLoading(false);
     console.error('Register error:', error);
     let errorMsg = 'حدث خطأ أثناء إنشاء الحساب';
-    if (error.code === 'auth/email-already-in-use') {
+    if (error.message?.includes('already registered') || error.message?.includes('already been registered')) {
       errorMsg = 'البريد الإلكتروني مسجل مسبقاً، قم بتسجيل الدخول.';
-    } else if (error.code === 'auth/invalid-email') {
+    } else if (error.message?.includes('invalid')) {
       errorMsg = 'صيغة البريد الإلكتروني غير صحيحة.';
+    } else if (error.message?.includes('weak')) {
+      errorMsg = 'كلمة المرور ضعيفة جداً.';
     }
     showError(errorMsg);
   }

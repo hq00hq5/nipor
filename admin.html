@@ -26,6 +26,7 @@
     <div class="nav-group-label">إدارة المحتوى</div>
     <a href="#" class="nav-item" id="nav-publishers" data-section="publishers"><div class="nav-item-icon"><i class="fa-solid fa-building-columns"></i></div><span class="nav-item-text">دور النشر</span></a>
     <a href="#" class="nav-item" id="nav-books" data-section="books"><div class="nav-item-icon"><i class="fa-solid fa-book"></i></div><span class="nav-item-text">الكتب</span></a>
+    <a href="#" class="nav-item" id="nav-slides" data-section="slides"><div class="nav-item-icon"><i class="fa-solid fa-images"></i></div><span class="nav-item-text">اللافتات (سلايدر)</span></a>
     <a href="#" class="nav-item" id="nav-categories" data-section="categories"><div class="nav-item-icon"><i class="fa-solid fa-palette"></i></div><span class="nav-item-text">التصنيفات</span></a>
     <div class="nav-group-label">عرض</div>
     <a href="library.html" class="nav-item"><div class="nav-item-icon"><i class="fa-solid fa-store"></i></div><span class="nav-item-text">عرض المكتبة</span></a>
@@ -54,6 +55,7 @@
         <div class="admin-card-body" style="display:flex;gap:var(--sp-md);flex-wrap:wrap">
           <button class="btn btn-primary" onclick="document.getElementById('nav-publishers').click()"><i class="fa-solid fa-plus"></i> إضافة دار نشر</button>
           <button class="btn btn-gold" onclick="document.getElementById('nav-books').click()"><i class="fa-solid fa-book-medical"></i> إضافة كتاب</button>
+          <button class="btn btn-secondary" onclick="document.getElementById('nav-slides').click()"><i class="fa-solid fa-images"></i> إضافة سلايد</button>
           <button class="btn btn-secondary" onclick="document.getElementById('nav-categories').click()"><i class="fa-solid fa-palette"></i> التصنيفات</button>
         </div>
       </div>
@@ -113,6 +115,40 @@
         </form></div>
       </div>
       <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon"><i class="fa-solid fa-list"></i></div>قائمة الكتب</div></div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>الكتاب</th><th>المؤلف</th><th>التصنيف</th><th>السعر</th><th>المخزون</th><th>إجراءات</th></tr></thead><tbody id="book-tbody"><tr class="empty-table-row" id="book-empty"><td colspan="6">لا توجد كتب</td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- SLIDES -->
+    <section id="section-slides" class="admin-section">
+      <div class="admin-card">
+        <div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon"><i class="fa-solid fa-images"></i></div><span id="slide-form-title">إضافة سلايد</span></div></div>
+        <div class="admin-card-body">
+          <form id="slide-form" novalidate>
+            <div class="form-grid">
+              <div class="form-group full">
+                <label class="form-label" for="slide-file">صورة السلايد <span class="required">*</span></label>
+                <div class="file-input-wrap">
+                  <i class="fa-solid fa-image" style="color:var(--clr-gold)"></i>
+                  <span class="file-input-label" id="slide-file-label">اختر صورة السلايد</span>
+                  <input type="file" id="slide-file" accept="image/*" required/>
+                </div>
+                <div class="file-preview" id="slide-preview"></div>
+              </div>
+            </div>
+            <div style="margin-top:var(--sp-lg);display:flex;gap:var(--sp-sm)">
+              <button type="submit" class="btn btn-primary" id="slide-submit"><span class="btn-spinner animate-spin hidden"><i class="fa-solid fa-spinner"></i></span><span class="btn-text"><i class="fa-solid fa-plus"></i> إضافة</span></button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-header"><div class="admin-card-title"><div class="admin-card-icon"><i class="fa-solid fa-list"></i></div>اللافتات الحالية</div></div>
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead><tr><th>الصورة</th><th>إجراءات</th></tr></thead>
+            <tbody id="slide-tbody"><tr class="empty-table-row" id="slide-empty"><td colspan="2">لا توجد سلايدات</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <!-- CATEGORIES -->

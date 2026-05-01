@@ -788,7 +788,7 @@ h1,h2,h3,h4{font-family:'Cairo',sans-serif;font-weight:700;line-height:1.5;paddi
 .fav-header{padding:var(--sp-lg);border-bottom:1px solid var(--clr-border);display:flex;align-items:center;justify-content:space-between;background:var(--clr-surface)}
 .fav-header-title{display:flex;align-items:center;gap:8px;font-family:'Cairo';font-weight:800;font-size:1.05rem}
 .fav-close{width:34px;height:34px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;background:var(--clr-surface-2);color:var(--txt-secondary);transition:all var(--t-fast)}
-.fav-close:hover{background:var(--clr-danger);color:white}
+.fav-close:hover, .fav-close:active{background:var(--clr-gold);color:var(--clr-surface)}
 .fav-body{flex:1;overflow-y:auto;padding:var(--sp-md)}
 .fav-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:var(--sp-md);color:var(--txt-muted)}
 .fav-item{display:flex;align-items:center;gap:var(--sp-md);padding:var(--sp-md);background:var(--clr-surface);border-radius:var(--r-md);margin-bottom:var(--sp-sm);transition:all var(--t-smooth);animation:fadeUp .3s ease both;border:1px solid var(--clr-border-clay)}
@@ -940,6 +940,40 @@ h1,h2,h3,h4{font-family:'Cairo',sans-serif;font-weight:700;line-height:1.5;paddi
 
 
 /* ══════════════════════════════════════════════════════════
+   SWIPER SLIDER
+   ══════════════════════════════════════════════════════════ */
+.mySwiper {
+  width: 100%;
+  height: 180px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(212, 175, 55, 0.1);
+  margin-bottom: var(--sp-lg);
+  overflow: hidden;
+  position: relative;
+  background: var(--clr-surface);
+}
+
+.swiper-slide {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.swiper-slide img.slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholder-slide {
+  background: var(--clr-bg);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  box-sizing: border-box;
+}
+
+/* ══════════════════════════════════════════════════════════
    RESPONSIVE — Mobile & Tablet
    ══════════════════════════════════════════════════════════ */
 
@@ -967,6 +1001,8 @@ h1,h2,h3,h4{font-family:'Cairo',sans-serif;font-weight:700;line-height:1.5;paddi
 
 /* Tablet (Xiaomi Pad, iPad) */
 @media(min-width:769px) and (max-width:1200px){
+  .mySwiper { height: 240px; border-radius: 20px; }
+  .swiper-slide { border-radius: 20px; }
   .pub-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
   .cat-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
   .books-grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
@@ -975,5 +1011,7 @@ h1,h2,h3,h4{font-family:'Cairo',sans-serif;font-weight:700;line-height:1.5;paddi
 
 /* Large Desktop */
 @media(min-width:1201px){
+  .mySwiper { height: 280px; border-radius: 25px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 175, 55, 0.15); }
+  .swiper-slide { border-radius: 25px; }
   .book-card{width:185px}
 }

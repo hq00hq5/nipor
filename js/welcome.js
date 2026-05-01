@@ -1,12 +1,11 @@
 // ╔══════════════════════════════════════════════════════════════╗
-// ║  Nippur — Premium Login Controller                          ║
-// ║  Mock Auth Bypass · Gold Micro-Interactions · Canvas BG     ║
+// ║  Nippur — Premium Login Controller (Supabase Auth)          ║
+// ║  Email/Phone Auth · Gold Micro-Interactions · Canvas BG     ║
 // ╚══════════════════════════════════════════════════════════════╝
 
 const $ = id => document.getElementById(id);
 
-import { auth } from '../firebase.js';
-import { signInWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { supabase } from '../supabase.js';
 
 // ══════════════════════════════════════
 //  CUNEIFORM CANVAS BACKGROUND
@@ -75,18 +74,14 @@ import { signInWithEmailAndPassword, RecaptchaVerifier, signInWithPhoneNumber } 
   function setTab(tab) {
     tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    // Position indicator
     indicator.style.left = tab.offsetLeft + 'px';
     indicator.style.width = tab.offsetWidth + 'px';
-    // Toggle forms
     const target = tab.dataset.tab;
     formEmail.classList.toggle('auth-form--hidden', target !== 'email');
     formPhone.classList.toggle('auth-form--hidden', target !== 'phone');
   }
 
   tabs.forEach(t => t.addEventListener('click', () => setTab(t)));
-
-  // Initial position
   requestAnimationFrame(() => setTab($('tab-email')));
   window.addEventListener('resize', () => {
     const active = document.querySelector('.auth-tab.active');
@@ -143,14 +138,13 @@ function showSuccess(title, desc) {
   $('modal-desc').textContent = desc || 'جاري تحميل مكتبتك...';
   spawnParticles();
   overlay.classList.add('active');
-  // Force redirect — no Firebase, no try/catch
   setTimeout(function() {
     window.location.href = 'library.html';
   }, 1200);
 }
 
 // ══════════════════════════════════════
-//  FORM HANDLERS (Firebase Auth)
+//  FORM HANDLERS (Supabase Auth)
 // ══════════════════════════════════════
 
 function setBtnLoading(isLoading) {
@@ -184,7 +178,7 @@ function hideError() {
 $('form-email').addEventListener('submit', async function(e) {
   e.preventDefault();
   hideError();
-  
+
   const email = $('input-email').value.trim();
   const password = $('input-pass').value;
 
@@ -202,17 +196,18 @@ $('form-email').addEventListener('submit', async function(e) {
   setBtnLoading(true);
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
     showSuccess('تم تسجيل الدخول', 'جاري تحميل مكتبتك...');
   } catch (error) {
     setBtnLoading(false);
     console.error('Login error:', error);
     let errorMsg = 'حدث خطأ أثناء تسجيل الدخول';
-    if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+    if (error.message?.includes('Invalid login credentials')) {
       errorMsg = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-    } else if (error.code === 'auth/wrong-password') {
-      errorMsg = 'كلمة المرور غير صحيحة';
-    } else if (error.code === 'auth/too-many-requests') {
+    } else if (error.message?.includes('Email not confirmed')) {
+      errorMsg = 'يرجى تأكيد بريدك الإلكتروني أو تفعيله من لوحة التحكم';
+    } else if (error.message?.includes('too many requests')) {
       errorMsg = 'محاولات كثيرة جداً. حاول مرة أخرى لاحقاً.';
     }
     showError(errorMsg);
@@ -220,9 +215,8 @@ $('form-email').addEventListener('submit', async function(e) {
 });
 
 // ══════════════════════════════════════
-//  PHONE OTP (Firebase Auth)
+//  PHONE — placeholder (Supabase phone auth requires Twilio setup)
 // ══════════════════════════════════════
-
 function setPhoneLoading(isLoading, btnId) {
   const btn = $(btnId);
   if (!btn) return;
@@ -254,71 +248,38 @@ function hidePhoneError() {
   $('phone-error').classList.remove('visible');
 }
 
-let confirmationResult = null;
-
-function initRecaptcha() {
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      'size': 'invisible',
-      'callback': (response) => {
-        // reCAPTCHA solved
-      }
-    });
-  }
-}
-
 $('form-phone').addEventListener('submit', async function(e) {
   e.preventDefault();
   hidePhoneError();
-  
+
   if ($('phone-step-1').style.display !== 'none') {
-    // Send OTP
     const phone = $('input-phone').value.trim();
-    if (!phone) {
-      showPhoneError('يرجى إدخال رقم الهاتف');
-      return;
-    }
-    
+    if (!phone) { showPhoneError('يرجى إدخال رقم الهاتف'); return; }
     setPhoneLoading(true, 'btn-otp-send');
-    initRecaptcha();
-    
     try {
-      confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+      const { error } = await supabase.auth.signInWithOtp({ phone });
+      if (error) throw error;
       $('phone-step-1').style.display = 'none';
       $('phone-step-2').style.display = 'block';
       setPhoneLoading(false, 'btn-otp-send');
     } catch (error) {
       setPhoneLoading(false, 'btn-otp-send');
-      console.error('SMS error:', error);
-      let errorMsg = 'تعذر إرسال الرمز. يرجى المحاولة مرة أخرى.';
-      if (error.code === 'auth/invalid-phone-number') {
-        errorMsg = 'رقم الهاتف غير صحيح (تأكد من إضافة رمز الدولة مثل +964)';
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMsg = 'محاولات كثيرة جداً. حاول مرة أخرى لاحقاً.';
-      }
-      showPhoneError(errorMsg);
+      console.error('OTP send error:', error);
+      showPhoneError('تعذر إرسال الرمز. تأكد من صحة الرقم أو تواصل مع الدعم.');
     }
   } else {
-    // Verify OTP
     const code = $('input-otp').value.trim();
-    if (!code) {
-      showPhoneError('يرجى إدخال رمز التحقق');
-      return;
-    }
-    
+    if (!code) { showPhoneError('يرجى إدخال رمز التحقق'); return; }
+    const phone = $('input-phone').value.trim();
     setPhoneLoading(true, 'btn-otp-verify');
-    
     try {
-      await confirmationResult.confirm(code);
+      const { error } = await supabase.auth.verifyOtp({ phone, token: code, type: 'sms' });
+      if (error) throw error;
       showSuccess('تم تسجيل الدخول بنجاح', 'جاري تحميل مكتبتك...');
     } catch (error) {
       setPhoneLoading(false, 'btn-otp-verify');
-      console.error('OTP error:', error);
-      let errorMsg = 'رمز التحقق خطأ';
-      if (error.code === 'auth/invalid-verification-code') {
-        errorMsg = 'الرمز غير صحيح، يرجى التأكد والمحاولة مجدداً';
-      }
-      showPhoneError(errorMsg);
+      console.error('OTP verify error:', error);
+      showPhoneError('الرمز غير صحيح، يرجى التأكد والمحاولة مجدداً');
     }
   }
 });
@@ -330,25 +291,29 @@ $('btn-phone-back').addEventListener('click', function() {
   $('input-otp').value = '';
 });
 
-// Register
 $('btn-register').addEventListener('click', function() {
   window.location.href = 'register.html';
 });
 
-// Guest
 $('btn-guest').addEventListener('click', function() {
   showSuccess('وضع الزائر', 'استمتع بتصفح المكتبة...');
 });
 
-// Forgot password
-$('forgot-link').addEventListener('click', function(e) {
+$('forgot-link').addEventListener('click', async function(e) {
   e.preventDefault();
-  showSuccess('تم إرسال رابط الاستعادة', 'تحقق من بريدك الإلكتروني');
+  const email = $('input-email').value.trim();
+  if (!email) { showError('أدخل بريدك الإلكتروني أولاً لاستعادة كلمة المرور'); return; }
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) throw error;
+    showSuccess('تم إرسال رابط الاستعادة', 'تحقق من بريدك الإلكتروني');
+  } catch (err) {
+    showError('خطأ أثناء إرسال رابط الاستعادة');
+  }
 });
 
-// Enter key shortcuts
 $('input-email').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') { e.preventDefault(); $('input-pass').focus(); }
 });
 
-console.log('%c Nippur Login — Luxury Glassmorphism','color:#D4AF37;font-weight:900;font-size:14px;background:#0A0A0A;padding:4px 12px;border-radius:4px');
+console.log('%c Nippur Login — Supabase Auth', 'color:#D4AF37;font-weight:900;font-size:14px;background:#0A0A0A;padding:4px 12px;border-radius:4px');
