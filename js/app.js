@@ -657,6 +657,11 @@ function initAuth() {
         
         const photoUrl = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'Nippur')}&background=D4AF37&color=0A0A0A`;
         $('profile-pic').src = photoUrl;
+        
+        const dPic = $('drawer-user-pic'); if (dPic) dPic.src = photoUrl;
+        const dName = $('drawer-user-name'); if (dName) dName.textContent = user.displayName || 'مستخدم نيپور';
+        const dEmail = $('drawer-user-email'); if (dEmail) dEmail.textContent = user.email || user.phoneNumber || '';
+        const dLogout = $('drawer-footer-logout'); if (dLogout) dLogout.classList.remove('hidden');
       }
       
       const favsCard = $('account-favorites');
@@ -672,6 +677,11 @@ function initAuth() {
       
       const profileInfo = $('account-profile-info');
       if (profileInfo) profileInfo.classList.add('hidden');
+      
+      const dPic = $('drawer-user-pic'); if (dPic) dPic.src = 'https://ui-avatars.com/api/?name=Guest&background=D4AF37&color=0A0A0A';
+      const dName = $('drawer-user-name'); if (dName) dName.textContent = 'زائر';
+      const dEmail = $('drawer-user-email'); if (dEmail) dEmail.textContent = 'يرجى تسجيل الدخول';
+      const dLogout = $('drawer-footer-logout'); if (dLogout) dLogout.classList.add('hidden');
       
       const favsCard = $('account-favorites');
       if (favsCard) favsCard.classList.add('hidden');
@@ -742,6 +752,76 @@ async function placeOrder() {
 function initAccount() {
   // Go browse button (from empty orders)
   $('go-browse')?.addEventListener('click', () => switchView('home'));
+}
+
+// ══════════════════════════════════════════════════════════
+//  RIGHT-SIDE DRAWER
+// ══════════════════════════════════════════════════════════
+function initDrawer() {
+  const toggleBtn = $('drawer-toggle');
+  const panel = $('drawer-panel');
+  const overlay = $('drawer-overlay');
+  const closeBtn = $('drawer-close');
+
+  function openDrawer() {
+    if(panel) panel.classList.add('active');
+    if(overlay) overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    if(panel) panel.classList.remove('active');
+    if(overlay) overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  toggleBtn?.addEventListener('click', openDrawer);
+  closeBtn?.addEventListener('click', closeDrawer);
+  overlay?.addEventListener('click', closeDrawer);
+
+  // Drawer Nav Items
+  $('drawer-nav-account')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeDrawer();
+    if (auth.currentUser) switchView('account');
+    else window.location.href = 'index.html';
+  });
+
+  $('drawer-nav-orders')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeDrawer();
+    switchView('orders');
+  });
+
+  $('drawer-nav-favs')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeDrawer();
+    if (auth.currentUser) {
+      $('fav-overlay')?.classList.add('open');
+      $('fav-panel')?.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    } else {
+      toast('يرجى تسجيل الدخول أولاً', 'warn');
+    }
+  });
+
+  $('drawer-nav-assistant')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeDrawer();
+    toast('المساعد الشخصي قريباً...', 'gold');
+  });
+
+  $('drawer-nav-settings')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeDrawer();
+    switchView('account');
+  });
+
+  $('drawer-btn-logout')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const { signOut } = await import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js");
+    await signOut(auth);
+    window.location.href = 'index.html';
+  });
 }
 
 // Theme
@@ -826,6 +906,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initZoom();
   initSeeAll();
   initFirestore();
+  initDrawer();
   updateCartUI();
   updateFavUI();
 

@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <script type="module" crossorigin src="/assets/main-0ZVLTtCh.js"></script>
+  <script type="module" crossorigin src="/assets/register-A6vHU5Tv.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/firebase-DWFIJjJQ.js">
   <link rel="stylesheet" crossorigin href="/assets/welcome-qzOvgg0t.css">
 </head>
@@ -51,19 +51,13 @@
   <section class="glass-card" id="glass-card">
     <div class="glass-card-glow"></div>
 
-    <!-- Tab Switcher: Email / Phone -->
-    <div class="auth-tabs" id="auth-tabs">
-      <button class="auth-tab active" data-tab="email" id="tab-email">
-        <i class="fa-solid fa-envelope"></i> البريد الإلكتروني
-      </button>
-      <button class="auth-tab" data-tab="phone" id="tab-phone">
-        <i class="fa-solid fa-mobile-screen"></i> رقم الهاتف
-      </button>
-      <div class="auth-tab-indicator" id="tab-indicator"></div>
-    </div>
+    <h2 style="color:var(--gold);text-align:center;margin-bottom:24px;font-size:1.4rem;">إنشاء حساب جديد</h2>
 
-    <!-- Email Form -->
-    <form class="auth-form" id="form-email" autocomplete="off">
+    <!-- Register Form -->
+    <form class="auth-form" id="form-register" autocomplete="off">
+      <div class="field">
+        <input class="field-input" id="input-name" type="text" placeholder="الاسم الكامل" autocomplete="name"/>
+      </div>
       <div class="field">
         <input class="field-input" id="input-email" type="email" placeholder="البريد الإلكتروني" autocomplete="email"/>
       </div>
@@ -71,60 +65,27 @@
         <input class="field-input" id="input-pass" type="password" placeholder="كلمة المرور"/>
         <button class="field-toggle" id="pass-toggle" type="button"><i class="fa-solid fa-eye"></i></button>
       </div>
-      <a href="#" class="forgot-link" id="forgot-link">نسيت كلمة المرور؟</a>
-      <div id="email-error" class="auth-error"></div>
-      <button class="btn-gold" type="submit" id="btn-login">
-        <span class="btn-gold-text">تسجيل بالبريد</span>
+      <div class="field">
+        <input class="field-input" id="input-pass-conf" type="password" placeholder="تأكيد كلمة المرور"/>
+        <button class="field-toggle" id="pass-conf-toggle" type="button"><i class="fa-solid fa-eye"></i></button>
+      </div>
+      <div id="register-error" class="auth-error"></div>
+      <div id="password-hint" style="color:var(--txt3);font-size:0.8rem;text-align:right;margin-top:-10px;display:none;">يجب أن تحتوي كلمة المرور على 8 أحرف، حرف كبير، رقم، ورمز خاص (@#$).</div>
+      <button class="btn-gold" type="submit" id="btn-register-submit">
+        <span class="btn-gold-text">إنشاء الحساب</span>
         <span class="btn-gold-shine"></span>
-        <i class="fa-solid fa-arrow-left btn-gold-arrow" id="btn-login-icon"></i>
-        <i class="fa-solid fa-circle-notch fa-spin btn-gold-spinner" id="btn-login-spinner" style="display:none;"></i>
+        <i class="fa-solid fa-user-plus btn-gold-arrow" id="btn-register-icon"></i>
+        <i class="fa-solid fa-circle-notch fa-spin btn-gold-spinner" id="btn-register-spinner" style="display:none;"></i>
       </button>
-    </form>
-
-    <!-- Phone Form -->
-    <form class="auth-form auth-form--hidden" id="form-phone" autocomplete="off">
-      <div id="phone-error" class="auth-error"></div>
-      
-      <div id="phone-step-1">
-        <div class="field">
-          <input class="field-input" id="input-phone" type="tel" placeholder="رقم الهاتف مع رمز الدولة (مثال: +964...)" autocomplete="tel" dir="ltr"/>
-        </div>
-        <div id="recaptcha-container"></div>
-        <button class="btn-gold" type="submit" id="btn-otp-send">
-          <span class="btn-gold-text">إرسال رمز التحقق</span>
-          <span class="btn-gold-shine"></span>
-          <i class="fa-solid fa-paper-plane btn-gold-arrow" id="btn-otp-send-icon"></i>
-          <i class="fa-solid fa-circle-notch fa-spin btn-gold-spinner" id="btn-otp-send-spinner" style="display:none;"></i>
-        </button>
-      </div>
-
-      <div id="phone-step-2" style="display:none;">
-        <div class="field">
-          <input class="field-input" id="input-otp" type="text" placeholder="رمز التحقق (6 أرقام)" autocomplete="one-time-code" dir="ltr"/>
-        </div>
-        <button class="btn-gold" type="submit" id="btn-otp-verify">
-          <span class="btn-gold-text">تأكيد الدخول</span>
-          <span class="btn-gold-shine"></span>
-          <i class="fa-solid fa-check btn-gold-arrow" id="btn-otp-verify-icon"></i>
-          <i class="fa-solid fa-circle-notch fa-spin btn-gold-spinner" id="btn-otp-verify-spinner" style="display:none;"></i>
-        </button>
-        <button type="button" class="btn-outline" id="btn-phone-back" style="width:100%; margin-top:12px; padding:12px;">
-          تعديل رقم الهاتف
-        </button>
-      </div>
     </form>
 
     <!-- Divider -->
     <div class="divider"><span>أو</span></div>
 
-    <!-- Register & Guest -->
-    <button class="btn-outline" id="btn-register">
-      <i class="fa-solid fa-user-plus"></i>
-      <span>إنشاء حساب جديد</span>
-    </button>
-    <button class="btn-ghost" id="btn-guest">
-      <i class="fa-regular fa-eye"></i>
-      <span>تصفح كزائر</span>
+    <!-- Login Link -->
+    <button class="btn-outline" id="btn-login-link" onclick="window.location.href='index.html'">
+      <i class="fa-solid fa-right-to-bracket"></i>
+      <span>تسجيل الدخول</span>
     </button>
   </section>
 
@@ -140,7 +101,7 @@
     <div class="modal-particles" id="modal-particles"></div>
     <div class="modal-icon"><i class="fa-solid fa-check"></i></div>
     <h2 class="modal-title" id="modal-title">مرحبا بك في نيپور</h2>
-    <p class="modal-desc" id="modal-desc">جاري تحميل مكتبتك...</p>
+    <p class="modal-desc" id="modal-desc">جاري إنشاء حسابك...</p>
     <div class="modal-bar"><div class="modal-bar-fill"></div></div>
   </div>
 </div>

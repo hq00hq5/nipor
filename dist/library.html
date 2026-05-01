@@ -12,14 +12,42 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <script type="module" crossorigin src="/assets/library-BKYNy6kN.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/firebase-ByxpQybF.js">
-  <link rel="stylesheet" crossorigin href="/assets/library-BrYpLnvo.css">
+  <script type="module" crossorigin src="/assets/library-BJEG38Sv.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/firebase-DWFIJjJQ.js">
+  <link rel="stylesheet" crossorigin href="/assets/library-C_2O9PUj.css">
 </head>
 <body>
 
 <!-- TOAST -->
 <div id="toastContainer" class="toast-container" role="alert"></div>
+
+<!-- ═══ RIGHT-SIDE DRAWER ═══ -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="drawer-panel" id="drawer-panel">
+  <div class="drawer-header">
+    <div class="drawer-user" id="drawer-user-info">
+      <img src="https://ui-avatars.com/api/?name=Guest&background=D4AF37&color=0A0A0A" id="drawer-user-pic" alt="User">
+      <div class="drawer-user-text">
+        <div class="drawer-user-name" id="drawer-user-name">زائر</div>
+        <div class="drawer-user-email" id="drawer-user-email">يرجى تسجيل الدخول</div>
+      </div>
+    </div>
+    <button class="drawer-close" id="drawer-close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="#" class="drawer-nav-item" id="drawer-nav-account"><i class="fa-solid fa-user"></i> <span>حسابي</span></a>
+    <a href="#" class="drawer-nav-item" id="drawer-nav-orders"><i class="fa-solid fa-bag-shopping"></i> <span>مشترياتي</span></a>
+    <a href="#" class="drawer-nav-item" id="drawer-nav-favs"><i class="fa-solid fa-heart"></i> <span>المفضلة</span></a>
+    <a href="#" class="drawer-nav-item" id="drawer-nav-assistant"><i class="fa-solid fa-robot"></i> <span>المساعد الشخصي</span></a>
+    <a href="#" class="drawer-nav-item" id="drawer-nav-settings"><i class="fa-solid fa-palette"></i> <span>الإعدادات والمظهر</span></a>
+    <a href="admin.html" class="drawer-nav-item hidden" id="drawer-nav-admin"><i class="fa-solid fa-gauge-high"></i> <span>لوحة الإدارة</span></a>
+  </nav>
+  <div class="drawer-footer hidden" id="drawer-footer-logout">
+    <button class="btn btn-ghost drawer-logout-btn" id="drawer-btn-logout">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج
+    </button>
+  </div>
+</aside>
 
 
 <!-- ═══ FAVORITES PANEL ═══ -->
@@ -57,14 +85,15 @@
   <section class="view view--active" id="view-home">
     <!-- Centered Logo Header -->
     <header class="view-header">
-      <div class="view-header-inner view-header-inner--centered">
+      <div class="view-header-inner">
+        <div class="header-actions">
+          <button class="header-action-btn" id="drawer-toggle"><i class="fa-solid fa-bars"></i></button>
+        </div>
         <div class="header-brand header-brand--centered">
           <div class="logo-icon logo-icon--hero">&#x12000;</div>
           <span class="logo-title text-gold">نيپور</span>
         </div>
-        <div class="header-actions">
-          <!-- Favorites moved to My Account -->
-        </div>
+        <div style="width: 42px;"></div> <!-- Spacer to keep brand centered -->
       </div>
     </header>
 
@@ -285,10 +314,6 @@
     <i class="fa-solid fa-bag-shopping bottom-nav-icon"></i>
     <span class="bottom-nav-label">حقيبتي</span>
     <span class="bottom-nav-badge hidden" id="cart-nav-badge">0</span>
-  </button>
-  <button class="bottom-nav-item" data-view="account" id="nav-account">
-    <i class="fa-solid fa-user bottom-nav-icon"></i>
-    <span class="bottom-nav-label">حسابي</span>
   </button>
 </nav>
 
